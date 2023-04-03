@@ -1,8 +1,16 @@
-# Create a new Laravel project command:
+# Inventory management system
 
-composer create-project laravel/laravel example-app
-# RUN
-php artisan serve
-# Migration
-php artisan migrate
+Create a new Laravel project command:
+
+```bash
+ composer create-project laravel/laravel example-app
+```
+Migration
+```bash
+ php artisan migrate
+```
+Run
+```bash
+ php artisan serve
+```
 
