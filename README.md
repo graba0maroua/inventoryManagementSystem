@@ -42,5 +42,10 @@ DB_DATABASE=laravel
 DB_USERNAME=laravel_user
 DB_PASSWORD=maroua
 ```
+- you might require to run these commands in error cases :
+```bash
+ composer dump-autoload
+  php artisan config:clear
+```
 
 
