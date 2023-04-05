@@ -13,6 +13,10 @@ Run
 ```bash
  php artisan serve
 ```
+ApiController
+```bash
+php artisan make:controller theController --api
+```
 SQLSERVER Connection
 - database.php
 ```bash
