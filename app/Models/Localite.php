@@ -12,10 +12,12 @@ class Localite extends Model
 
     protected $table = 'INV.T_E_LOCATION_LOC';
     protected $primaryKey = 'LOC_ID';
+    public $incrementing = false;
     public $timestamps = false;
+    protected $keyType = 'string';
 
     public function Centre(): BelongsTo
     {
-        return $this->belongsTo(Centre::class);
+        return $this->belongsTo(Centre::class, 'COP_ID');
     }
 }

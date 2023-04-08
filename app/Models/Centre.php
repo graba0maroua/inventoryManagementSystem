@@ -13,14 +13,16 @@ class Centre extends Model
     protected $table = 'INV.T_R_CENTRE_OPERATIONNEL_COP';
     protected $primaryKey = 'COP_ID';
     public $timestamps = false;
+    public $incrementing = false;
+    protected $keyType = 'string';
 
     public function Unite(): BelongsTo
     {
-        return $this->belongsTo(Unite::class);
+        return $this->belongsTo(Unite::class,'UCM_ID');
     }
     public function Localites(): HasMany
     {
-        return $this->hasMany(Localite::class);
+        return $this->hasMany(Localite::class, 'COP_ID', 'COP_ID');
     }
 
 

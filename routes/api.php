@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\BiensScannesController;
+use App\Http\Controllers\CentreController;
+use App\Http\Controllers\UniteController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -18,4 +20,16 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+
  Route::get('/biensScannes',[BiensScannesController::class,'index']); //GetAllBiensScannes
+
+ Route::get('/unites',[UniteController::class,'index']); //GetAllUnites
+
+ Route::get('/COP/LOC',[CentreController::class,'GetAllLOC_by_COP']); //GetAlllocalities in centers
+
+ Route::get('/UCM/{id}',[UniteController::class,'GetLOC_by_UCM']); //Getalllocalites by Unite
+
+
+
+
