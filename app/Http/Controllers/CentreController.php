@@ -10,7 +10,7 @@ class CentreController extends Controller
 
     public function GetAllLOC_by_COP()
     {
-        return Centre::with('localites')->get();
+        return Centre::with('localites')->get(); //get all localities in centers
     }
 
 

@@ -10,12 +10,12 @@ class UniteController extends Controller
 
     public function index()
     {
-        return Unite::all();
+        return Unite::all();   //get all unites
     }
 
     public function GetLOC_by_UCM(string $id)
     {
-        return Unite::find($id)->CentreLocalite;
+        return Unite::find($id)->CentreLocalite; //get localite by unite id
     }
 
     public function store(Request $request)
