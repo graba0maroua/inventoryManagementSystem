@@ -11,5 +11,7 @@ class BiensScannes extends Model
     protected $table = 'INV.T_BIENS_SCANNES';
     protected $primaryKey = 'INV_ID';
     public $timestamps = false;
+    public $incrementing = false;
+    protected $keyType = 'string';
 
 }

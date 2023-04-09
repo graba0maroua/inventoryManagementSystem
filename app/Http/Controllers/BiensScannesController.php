@@ -28,7 +28,7 @@ class BiensScannesController extends Controller
      */
     public function show(string $id)
     {
-        //
+        return BiensScannes::find($id);
     }
 
     /**

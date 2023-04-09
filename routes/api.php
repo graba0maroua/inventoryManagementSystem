@@ -23,12 +23,12 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 
  Route::get('/biensScannes',[BiensScannesController::class,'index']); //GetAllBiensScannes
+ Route::get('/biensScannes/{id}',[BiensScannesController::class,'show']); //GetAllBiensScannes
 
  Route::get('/unites',[UniteController::class,'index']); //GetAllUnites
+ Route::get('/UCM/{id}',[UniteController::class,'GetLOC_by_UCM']); //Getalllocalites by Unite
 
  Route::get('/COP/LOC',[CentreController::class,'GetAllLOC_by_COP']); //GetAlllocalities in centers
-
- Route::get('/UCM/{id}',[UniteController::class,'GetLOC_by_UCM']); //Getalllocalites by Unite
 
 
 
