@@ -9,7 +9,7 @@ use DB;
 class CentreController extends Controller
 {
 
-    public function GetAllLOC_by_COP()
+    public function GetLOC()
     {
         return Localite::with("centre")->get();
         //get all localities in centers
