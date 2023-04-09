@@ -5,16 +5,18 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Thiagoprz\CompositeKey\HasCompositeKey;
 
 class Localite extends Model
 {
     use HasFactory;
+    use HasCompositeKey;
 
     protected $table = 'INV.T_E_LOCATION_LOC';
-    protected $primaryKey = 'LOC_ID';
+    protected $primaryKey = ['LOC_ID','COP_ID'];
     public $incrementing = false;
     public $timestamps = false;
-    protected $keyType = 'string';
+    // protected $keyType = 'string';
 
     public function Centre(): BelongsTo
     {

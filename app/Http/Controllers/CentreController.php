@@ -4,13 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Models\Centre;
 use Illuminate\Http\Request;
-
+use App\Models\Localite;
+use DB;
 class CentreController extends Controller
 {
 
     public function GetAllLOC_by_COP()
     {
-        return Centre::with('localites')->get(); //get all localities in centers
+        return Localite::with("centre")->get();
+        //get all localities in centers
     }
 
 
