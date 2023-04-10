@@ -26,4 +26,8 @@ class Centre extends Model
         return $this->hasMany(Localite::class, 'COP_ID', 'COP_ID');
     }
 
+    public function users()
+    {
+        return $this->morphMany(User::class, 'structure');
+    }
 }

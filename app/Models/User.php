@@ -50,4 +50,8 @@ class User extends Authenticatable
     {
         return $this->hasOne(role::class);
     }
+    public function structure()
+    {
+        return $this->morphTo();
+    }
 }

@@ -32,4 +32,8 @@ class Unite extends Model
             'COP_ID' // Local key on the centre table
         );
     }
+    public function users()
+    {
+        return $this->morphMany(User::class, 'structure');
+    }
 }
