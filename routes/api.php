@@ -21,15 +21,17 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-
- Route::get('/biensScannes',[BiensScannesController::class,'index']); //GetAllBiensScannes
- Route::get('/biensScannes/{id}',[BiensScannesController::class,'show']); //GetAllBiensScannes
-
  Route::get('/unites',[UniteController::class,'index']); //GetAllUnites
  Route::get('/UCM/{id}',[UniteController::class,'GetLOC_by_UCM']); //Getalllocalites by Unite
 
  Route::get('/COP/LOC',[CentreController::class,'GetLOC']); //GetAlllocalities in centers
 
+ Route::controller(BiensScannesController::class)->group(function(){
+    Route::get('/localitesNonVisites','localitesNonVisites');
+    Route::get('/localitesVisites','localitesVisites');
+    Route::get('/biensScannes','index');
+
+});
 
 
 

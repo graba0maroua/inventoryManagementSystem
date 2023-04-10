@@ -26,5 +26,4 @@ class Centre extends Model
         return $this->hasMany(Localite::class, 'COP_ID', 'COP_ID');
     }
 
-
 }

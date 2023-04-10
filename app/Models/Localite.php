@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Thiagoprz\CompositeKey\HasCompositeKey;
 
 class Localite extends Model
@@ -21,5 +22,9 @@ class Localite extends Model
     public function Centre(): BelongsTo
     {
         return $this->belongsTo(Centre::class, 'COP_ID');
+    }
+    public function biensScannes(): HasMany
+    {
+        return $this->hasMany(BiensScannes::class,'LOC_ID','LOC_ID');
     }
 }
