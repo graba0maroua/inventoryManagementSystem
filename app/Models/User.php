@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -23,7 +24,11 @@ class User extends Authenticatable
         'matricule',
         'email',
         'password',
-        'isActivated'
+        'isActivated',
+        'role_id',
+        'structure_type',
+        'structure_id'
+
     ];
 
     /**
@@ -45,9 +50,13 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    public function role(): HasOne
+    public function role(): BelongsTo
+{
+    return $this->belongsTo(Role::class);
+}
+    public function demandeCompte(): HasOne
     {
-        return $this->hasOne(role::class);
+        return $this->hasOne(DemandeCompte::class);
     }
     public function structure()
     {
