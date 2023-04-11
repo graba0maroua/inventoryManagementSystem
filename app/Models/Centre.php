@@ -28,6 +28,6 @@ class Centre extends Model
 
     public function users()
     {
-        return $this->morphMany(User::class, 'structure');
+        return $this->morphOne(User::class, 'structure');
     }
 }

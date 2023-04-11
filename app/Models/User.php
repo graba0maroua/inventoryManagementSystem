@@ -23,8 +23,6 @@ class User extends Authenticatable
         'matricule',
         'email',
         'password',
-        'role',
-        'structure',
         'isActivated'
     ];
 
