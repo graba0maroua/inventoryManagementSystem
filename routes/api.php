@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BiensScannesController;
 use App\Http\Controllers\CentreController;
@@ -17,9 +18,6 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
-Route::post('/register',[AuthController::class,'register']);
- Route::post('/login',[AuthController::class,'login']);
-
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
@@ -29,10 +27,21 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
  Route::get('/COP/LOC',[CentreController::class,'GetLOC']); //GetAlllocalities in centers
 
- Route::controller(BiensScannesController::class)->group(function(){
+ Route::controller(BiensScannesController::class)->middleware('auth:sanctum')->group(function(){
     Route::get('/localitesNonVisites','localitesNonVisites');
     Route::get('/localitesVisites','localitesVisites');
     Route::get('/biensScannes','index');
+
+});
+
+Route::post('/register',[AuthController::class,'register']);
+ Route::post('/login',[AuthController::class,'login']);
+ 
+ Route::controller(AdminController::class)->group(function(){
+    Route::put('/acceptDemandeCompte/{id}','acceptDemandeCompte');
+    Route::put('/refuseDemandeCompte/{id}','refuseDemandeCompte');
+    Route::put('/deactivateUser/{id}','deactivateUser');
+    Route::delete('/deleteUser/{id}','deleteUser');
 
 });
 
