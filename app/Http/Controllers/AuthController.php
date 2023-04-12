@@ -45,6 +45,7 @@ class AuthController extends Controller
             'role_id' => $role->id,
             'structure_type' => get_class($structure),
             'structure_id' => $structure->getKey(),
+            
         ]);
 
          // Create a new account demande for the user

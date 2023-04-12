@@ -18,10 +18,10 @@ return new class extends Migration
             $table->string('matricule')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->boolean('isActivated')->default(false);
-            $table->foreignId('role_id')->constrained()->onDelete('cascade');
+            $table->boolean('Compte_isActivated')->default(false);
+            $table->unsignedBigInteger('role_id');
             $table->morphs('structure');
-            $table->foreignId('demandeCompte_id')->nullable()->constrained()->onDelete('cascade');
+            $table->foreign('role_id')->references('id')->on('roles')->onDelete('cascade');
 
             $table->rememberToken();
             $table->timestamps();
