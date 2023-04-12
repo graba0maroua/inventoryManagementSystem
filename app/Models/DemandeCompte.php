@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class DemandeCompte extends Model
 {
     use HasFactory;
-    protected $fillable = ['user_id', 'status', 'edited_by'];
+    protected $fillable = ['user_id', 'status', 'matricule','name','role','structure','structure_id','edited_by'];
 
     public function user(): BelongsTo
     {

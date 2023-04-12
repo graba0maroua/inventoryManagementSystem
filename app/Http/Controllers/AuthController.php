@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\DemandeCompte;
 use App\Models\role;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -13,12 +14,13 @@ class AuthController extends Controller
     public function register(Request $request){
 
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|unique:users|max:255',
-            'matricule' => 'required|string|max:255|unique:users',
+            'name' => 'required|string',
+            'email' => 'required|string|email|unique:users',
+            'matricule' => 'required|string|unique:users',
             'password' => 'required|string|min:8',
-            'role' => 'required|string',
-            'structure'=>'required|string'
+            'role' => 'required|string|in:Admin,Chef_équipe,Chef_centre,Chef_unité',
+            'structure_type' => 'required|string|in:Centre,Unite',
+            'structure_id' => 'required|string',
 
         ]);
 
@@ -26,23 +28,32 @@ class AuthController extends Controller
             return response()->json(['message' => 'validation error','errors' => $validator->errors()], 422);
         }
 
-        $role = role::where('name', $request->role)->firstOrFail();
+        $role = Role::where('name', $request->role)->firstOrFail();
 
-       $user = User::create([
+        // Retrieve the structure based on its type and ID
+        $structureType = $request->structure_type;
+        $structureId = $request->structure_id;
+        $structure = $structureType::find($structureId);
+        if ($structure === null) {
+            return response()->json(['message' => 'Structure not found'], 404);
+        }
+        $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
-            'password' => hash::make($request->password),
-            'structure_type' => $request->structure,
-            'role_id' => Role::where('name', $request->role)->first()->id,
+            'password' => bcrypt($request->password),
+            'matricule' => $request->matricule,
+            'role_id' => $role->id,
+            'structure_type' => get_class($structure),
+            'structure_id' => $structure->getKey(),
         ]);
 
-        $token=$user->createToken('myapptoken')->plainTextToken;
-        $response = [
-          'user' => $user,
-          'token'=> $token
-        ];
-        return response($response,201);
+         // Create a new account demande for the user
+         $demandeCompte = DemandeCompte::create([
+            'user_id' => $user->id,
+            'status' => 'pending'
+        ]);
 
+        return response()->json(['message' => 'User created successfully', 'user' => $user,'demandeCompte'=>$demandeCompte]);
    }
 
 

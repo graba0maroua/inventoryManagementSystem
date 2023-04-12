@@ -6,13 +6,13 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-  
+
     public function up(): void
     {
         Schema::create('demande_comptes', function (Blueprint $table) {
             $table->id();
-            $table->string('status')->default('pending');
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->string('status')->default('pending');
             $table->unsignedBigInteger('edited_by')->nullable();
             $table->timestamps();
         });
