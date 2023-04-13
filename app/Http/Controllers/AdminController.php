@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\DemandeCompte;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class AdminController extends Controller
 {
@@ -15,6 +16,7 @@ class AdminController extends Controller
             return response()->json(['message' => 'DemandeCompte not found.'], 404);
         }
         $demandeCompte->status = 'accepted';
+        $demandeCompte->edited_by = Auth::user()->name;
         $demandeCompte->save();
 
         $user = $demandeCompte->user;
@@ -23,7 +25,7 @@ class AdminController extends Controller
 
         return response()->json(['message' => 'Demande accepted'], 200);
     }
-    
+
     public function refuseDemandeCompte(string $id)
     {
         $demandeCompte = DemandeCompte::find($id);
@@ -32,6 +34,7 @@ class AdminController extends Controller
         }
 
         $demandeCompte->status = 'refused';
+        $demandeCompte->edited_by = Auth::user()->name;
         $demandeCompte->save();
 
         return response()->json(['message' => 'DemandeCompte refused.'], 200);
@@ -49,7 +52,7 @@ class AdminController extends Controller
             return response()->json(['message' => 'User account is already deactivated.'], 200);
         }
     }
-    //! MOH => i Added desactuvate and delete user but am not sure its useful
+    //! MOH => i Added desactivate and delete user bsh manich sure its useful
     public function deleteUser(string $id)
     {
         $user = User::findOrFail($id);
