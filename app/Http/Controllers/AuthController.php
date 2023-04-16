@@ -25,7 +25,6 @@ class AuthController extends Controller
             'role' => 'required|string|in:Admin,Chef_équipe,Chef_centre,Chef_unité',
             'structure_type' => 'required|string',
             'structure_id' => 'required|string',
-
         ]);
 
         if ($validator->fails()) {
@@ -95,7 +94,6 @@ class AuthController extends Controller
     if (!$demandeCompte || $demandeCompte->status !== 'accepted') {
         return response()->json(['message' => 'Your Account has not been accepted yet'], 401);
     }
-    //! Esq je laisse les 2 fonctions seules wela je test les 2 au meme temps
 
     if (!Auth::attempt($request->only(['matricule', 'password']))) {
         return response()->json(['message' => 'Invalid credentials'], 401);

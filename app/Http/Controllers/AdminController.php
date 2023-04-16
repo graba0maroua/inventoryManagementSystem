@@ -20,7 +20,7 @@ class AdminController extends Controller
         $demandeCompte->save();
 
         $user = $demandeCompte->user;
-        $user->Compte_isActivated = true;
+        $user->Compte_isActivated = 1;
         $user->save();
 
         return response()->json(['message' => 'Demande accepted'], 200);
@@ -44,7 +44,7 @@ class AdminController extends Controller
     {
         $user = User::findOrFail($id);
         if ($user->Compte_isActivated) {
-            $user->Compte_isActivated = false;
+            $user->Compte_isActivated = 0;
             $user->save();
 
             return response()->json(['message' => 'User account has been deactivated.'], 200);
@@ -52,7 +52,6 @@ class AdminController extends Controller
             return response()->json(['message' => 'User account is already deactivated.'], 200);
         }
     }
-    //! MOH => i Added desactivate and delete user bsh manich sure its useful
     public function deleteUser(string $id)
     {
         $user = User::findOrFail($id);

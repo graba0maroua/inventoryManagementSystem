@@ -4,9 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\BiensScannes;
 use App\Models\Localite;
+use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-
+use Auth;
 class BiensScannesController extends Controller
 {
 
@@ -18,24 +18,27 @@ class BiensScannesController extends Controller
     public function localitesVisites(){
         $visitedLocalities =Localite::has('biensScannes')
         ->select('LOC_ID', 'LOC_LIB')
+        ->groupBy('LOC_ID','LOC_LIB')
         ->get();
         return response()->json($visitedLocalities);
     }
-
     public function localitesNonVisites(){
         $NotvisitedLocalities = Localite::doesntHave('biensScannes') ->select('LOC_ID', 'LOC_LIB')
         ->get();
         return response()->json($NotvisitedLocalities);
     }
-
 //* Filtrer liste d'inventaires par structure
-public function listeInventairesScannés()
+public function listeInventairesScannes(Request $request)
 {
-    $user = Auth::user();
+    $user =   Auth::user();
+
+if (!$user) {
+    return response()->json(['message' => 'User not found'], 404);
+}
     switch ($user->role_id) {
-        case '1':
-            $scannedInventory = BiensScannes::where('UCM_ID', $user->structure_id)->get();
-            break;
+        // case '1':
+        //     $scannedInventory = BiensScannes::where('UCM_ID', $user->structure_id)->get();
+        //     break;
         case '2':
             $scannedInventory = BiensScannes::where('COP_ID', $user->structure_id)->get();
             break;
@@ -51,4 +54,7 @@ public function listeInventairesScannés()
 }
      return response()->json(['inventoryList' => $scannedInventory], 200);
 }
+
+
+
 }
