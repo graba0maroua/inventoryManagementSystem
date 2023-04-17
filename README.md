@@ -1,17 +1,14 @@
 # Inventory management system
 
-Create a new Laravel project command:
-
-```bash
- composer create-project laravel/laravel example-app
-```
+Useful commands:
 Migration
+- 1) 
 ```bash
- php artisan migrate
+ php artisan migrate --path=database/migrations/2023_04_11_164724_create_demande_comptes_table.php
 ```
-Run
+- 2) rolling back migrations 
 ```bash
- php artisan serve
+ php artisan migrate --step=2
 ```
 ApiController
 ```bash
