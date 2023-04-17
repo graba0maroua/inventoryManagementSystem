@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\BiensScannes;
+use App\Models\Equipe;
 use App\Models\Localite;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -15,18 +16,18 @@ class BiensScannesController extends Controller
         return BiensScannes::all();
     }
 // * les localités visités et non visités
-    public function localitesVisites(){
-        $visitedLocalities =Localite::has('biensScannes')
-        ->select('LOC_ID', 'LOC_LIB')
-        ->groupBy('LOC_ID','LOC_LIB')
-        ->get();
-        return response()->json($visitedLocalities);
-    }
-    public function localitesNonVisites(){
-        $NotvisitedLocalities = Localite::doesntHave('biensScannes') ->select('LOC_ID', 'LOC_LIB')
-        ->get();
-        return response()->json($NotvisitedLocalities);
-    }
+// //     public function localitesVisites(){
+// //         $visitedLocalities =Localite::has('biensScannes')
+// //         ->select('LOC_ID', 'LOC_LIB')
+// //         ->groupBy('LOC_ID','LOC_LIB')
+// //         ->get();
+// //         return response()->json($visitedLocalities);
+// //     }
+// //     public function localitesNonVisites(){
+// //         $NotvisitedLocalities = Localite::doesntHave('biensScannes') ->select('LOC_ID', 'LOC_LIB')
+// //         ->get();
+// //         return response()->json($NotvisitedLocalities);
+// //     }
 //* Filtrer liste d'inventaires par structure
 public function listeInventairesScannes(Request $request)
 {
