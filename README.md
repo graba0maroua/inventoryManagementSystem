@@ -1,19 +1,17 @@
 # Inventory management system
-
-Useful commands:
-- Migration
-1)
-```bash
+## Useful commands:
+**Migration:**
+- migrate a specific table with path 
+```laravel
  php artisan migrate --path=database/migrations/2023_04_11_164724_create_demande_comptes_table.php
 ```
-2) rolling back migrations 
-```bash
+- rolling back migrations by steps 
+```laravel
  php artisan migrate --step=2
 ```
 - ApiController
-```bash
+```laravel
 php artisan make:controller theController --api
 ```
-
 
 
