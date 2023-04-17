@@ -4,6 +4,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BiensScannesController;
 use App\Http\Controllers\CentreController;
+use App\Http\Controllers\LocaliteController;
 use App\Http\Controllers\UniteController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -19,25 +20,25 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
-// ->middleware('auth:sanctum')
- Route::controller(BiensScannesController::class)->middleware('auth:sanctum')->group(function(){
-    Route::get('/localitesNonVisites','localitesNonVisites');
-    Route::get('/localitesVisites','localitesVisites');
-    Route::get('/biensScannes','index');
-    // Route::get('/liste/{id}','liste');
-    Route::get('/listeInventairesScannes','listeInventairesScannes');
-});
 
 Route::post('/register',[AuthController::class,'register']);
 Route::post('/login',[AuthController::class,'login']);
 Route::post('/logout',[AuthController::class,'logout'])->middleware('auth:sanctum');
 
- Route::controller(AdminController::class)->middleware('auth:sanctum')->group(function(){
+Route::controller(AdminController::class)->middleware('auth:sanctum')->group(function(){
     Route::put('/acceptDemandeCompte/{id}','acceptDemandeCompte');
     Route::put('/refuseDemandeCompte/{id}','refuseDemandeCompte');
     Route::put('/deactivateUser/{id}','deactivateUser');
     Route::delete('/deleteUser/{id}','deleteUser');
 
+});
+ Route::controller(LocaliteController::class)->middleware('auth:sanctum')->group(function(){
+    Route::get('/localitesNonVisites','localitesNonVisites');
+    Route::get('/localitesVisites','localitesVisites');
+});
+Route::controller(BiensScannesController::class)->middleware('auth:sanctum')->group(function(){
+    Route::get('/biensScannes','index');
+    Route::get('/listeInventairesScannes','listeInventairesScannes');
 });
 
 
