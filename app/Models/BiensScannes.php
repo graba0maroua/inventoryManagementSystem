@@ -9,14 +9,14 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class BiensScannes extends Model
 {
     use HasFactory;
-    protected $table = 'INV.T_BIENS_SCANNES';
-    protected $primaryKey = 'INV_ID';
+    protected $table = 'dbo.bien';
+    protected $primaryKey = 'inv_id';
     public $timestamps = false;
     public $incrementing = false;
     protected $keyType = 'string';
 
     public function localite(): BelongsTo
     {
-        return $this->belongsTo(Localite::class, 'LOC_ID');
+        return $this->belongsTo(Localite::class, 'LOC_ID','codelocalisation');
     }
 }

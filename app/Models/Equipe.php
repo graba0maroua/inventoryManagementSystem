@@ -12,4 +12,5 @@ class Equipe extends Model
     protected $primaryKey = 'GROUP_ID';
     public $timestamps = false;
     public $incrementing = false;
+    // protected $keyType = 'string';
 }

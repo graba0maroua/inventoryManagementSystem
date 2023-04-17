@@ -20,7 +20,9 @@ return new class extends Migration
             $table->string('password');
             $table->boolean('Compte_isActivated')->default(false);
             $table->Integer('role_id');
-            $table->morphs('structure');
+            // $table->morphs('structure');
+            $table->string('structure_id');
+            $table->string('structure_type');
             $table->foreign('role_id')->references('id')->on('roles')->onDelete('cascade');
 
             $table->rememberToken();
