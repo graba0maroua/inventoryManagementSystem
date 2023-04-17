@@ -22,7 +22,7 @@ class AuthController extends Controller
             'email' => 'required|string|email|unique:users',
             'matricule' => 'required|string|unique:users',
             'password' => 'required|string|min:8',
-            'role' => 'required|string|in:Admin,Chef_équipe,Chef_centre,Chef_unité',
+            'role' => 'required|string',
             'structure_type' => 'required|string',
             'structure_id' => 'required|string',
         ]);
