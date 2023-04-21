@@ -25,7 +25,7 @@ class Localite extends Model
     }
     public function biensScannes(): HasMany
     {
-        return $this->hasMany(BiensScannes::class,'codelocalisation','LOC_ID');
+        return $this->hasMany(BiensScannes::class,'LOC_ID','LOC_ID');
     }
 
 }
