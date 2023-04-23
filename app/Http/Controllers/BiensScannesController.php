@@ -38,10 +38,11 @@ if (!$user) {
     return response()->json(['message' => 'User not found'], 404);
 }
     switch ($user->role_id) {
+        //TODO add table Unités avec ces centres
         // case '1':
         //     $scannedInventory = BiensScannes::where('UCM_ID', $user->structure_id)->get();
         //     break;
-        case '2':
+        case '2': //? TESTED 
             $scannedInventory = BiensScannes::where('COP_ID', $user->structure_id)->get();
             break;
         case '3':
