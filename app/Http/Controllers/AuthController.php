@@ -18,13 +18,13 @@ class AuthController extends Controller
     public function register(Request $request){
 
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string',
-            'email' => 'required|string|email|unique:users',
+            'name' => 'string',
+            'email' => 'string|email|unique:users',
             'matricule' => 'required|string|unique:users',
             'password' => 'required|string|min:8',
             'role' => 'required|string',
-            // 'structure_type' => 'string',
-            // 'structure_id' => 'string',
+            'structure_type' => 'string',
+            'structure_id' => 'string'
         ]);
 
         if ($validator->fails()) {
@@ -38,20 +38,21 @@ class AuthController extends Controller
             $structureType = 'App\Models\Centre';
         } elseif ($request->structure_type === 'Unite') {
             $structureType = 'App\Models\Unite';
-        } elseif ($role='Admin'){
-            $user = User::create([
-                'name' => $request->name,
-                'email' => $request->email,
-                'password' => bcrypt($request->password),
-                'matricule' => $request->matricule,
-                'role_id' => '4',
-                'structure_type' => '',
-                'structure_id' => '',
-                'Compte_isActivated'=> 1
+        }
+        // elseif ($role='Admin'){
+        //     $user = User::create([
+        //         'name' => $request->name,
+        //         'email' => $request->email,
+        //         'password' => bcrypt($request->password),
+        //         'matricule' => $request->matricule,
+        //         'role_id' => '4',
+        //         'structure_type' => '',
+        //         'structure_id' => '',
+        //         'Compte_isActivated'=> 1
 
-            ]);
-            return response()->json(['message' => 'User created successfully']);
-        }else {
+        //     ]);
+        //     return response()->json(['message' => 'Admin created successfully']);}
+            else {
             return response()->json(['message' => 'Invalid structure type'], 422);
         }
 
@@ -98,14 +99,6 @@ class AuthController extends Controller
             'message' => 'User not found.',
         ], 401);
     }
-    if ($user->role_id==4) { //if user is Admin
-        $token=$user->createToken('myapptoken')->plainTextToken;
-        $response = [
-            'message' => 'Admin Logged In Successfully',
-            'token'=> $token
-        ];
-        return response($response,201);
-    }
     if (!$user->Compte_isActivated) {
         return response()->json(['message' => 'Your account has not been activated yet'], 401);
     }
@@ -117,6 +110,14 @@ class AuthController extends Controller
 
     if (!Auth::attempt($request->only(['matricule', 'password']))) {
         return response()->json(['message' => 'Invalid credentials'], 401);
+    }
+    if ($user->role_id==4) { //if user is Admin
+        $token=$user->createToken('myapptoken')->plainTextToken;
+        $response = [
+            'message' => 'Admin Logged In Successfully',
+            'token'=> $token
+        ];
+        return response($response,201);
     }
 
     $token=$user->createToken('myapptoken')->plainTextToken;
