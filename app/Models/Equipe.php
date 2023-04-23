@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Equipe extends Model
 {
     use HasFactory;
-    protected $table = 'dbo.equipe_Temp';
+    protected $table = 'dbo.T_EQUIPE';
     protected $primaryKey = 'GROUP_ID';
     public $timestamps = false;
     public $incrementing = false;
