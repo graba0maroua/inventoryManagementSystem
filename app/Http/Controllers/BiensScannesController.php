@@ -126,77 +126,7 @@ public function getUnitsWithScannedInventory()
     return response()->json(['units' => $result], 200);
 }
 
-public function LocalitiesWithNotScannedInventory() //? SQL query
-{
-    $localities = Localite::all();
-    $result = [];
 
-    foreach ($localities as $locality) {
-$notScannedCount = DB::select("
-            SELECT COUNT(*) as count
-            FROM INV.T_E_ASSET_AST a
-            LEFT JOIN INV.T_BIENS_SCANNES b
-            ON a.AST_CB = b.code_bar
-            WHERE a.COP_ID = ?
-            AND b.LOC_ID IS NULL
-        ", [$locality->COP_ID])[0]->count;
-
-    $result[] = [
-            'locality' => $locality->LOC_LIB,
-            'centre' => $locality->COP_ID,
-
-            'not_scanned_count' => $notScannedCount,
-
-        ];
-    }
-
-    return response()->json(['localités' => $result], 200);
-}
-public function getLocalitiesWithNotScannedInventory() //? elequent
-{
-    $localities = Localite::all();
-    $result = [];
-
-    foreach ($localities as $locality) {
-    $notScannedCount = Assets::where('COP_ID', $locality->COP_ID)
-            ->whereNotIn('AST_CB', function($query) use ($locality) {
-                $query->select('code_bar')
-                    ->from('INV.T_BIENS_SCANNES')
-                    ->where('COP_ID', $locality->COP_ID)
-                    ->where('LOC_ID', $locality->LOC_ID);
-            })
-            ->count();
-        $result[] = [
-            'locality' => $locality->LOC_LIB,
-            'centre' => $locality->COP_ID,
-            'not_scanned_count' => $notScannedCount
-        ];
-    }
-
-    return response()->json(['localités' => $result], 200);
-}
-
-public function getCentersWithNotScannedInventory() //? elequent
-{
-    $centers = Centre::all();
-    $result = [];
-    foreach ($centers as $center) {
-        $notScannedCount = Assets::where('COP_ID', $center->COP_ID)
-            ->whereNotIn('AST_CB', function($query) use ($center) {
-                $query->select('code_bar')
-                    ->from('INV.T_BIENS_SCANNES')
-                    ->where('COP_ID', $center->COP_ID);
-            })
-            ->count();
-        $result[] = [
-            'center_id' => $center->COP_ID,
-            'center_name' => $center->COP_LIB,
-            'not_scanned_count' => $notScannedCount
-        ];
-    }
-
-    return response()->json(['centres' => $result], 200);
-}
 // *TESTED
 public function getCentersWithNotScannedInventorySQL()
 {
@@ -230,6 +160,86 @@ public function getUnitsWithNotScannedInventorySQL()
 
     return response()->json(['units' => $result], 200);
 }
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+public function getLocalitiesWithNotScannedInventoryy()//? ELEQUENT
+{
+    $localities = Localite::all();
+    $result = [];
+
+    foreach ($localities as $locality) {
+    $notScannedCount = Assets::where('COP_ID', $locality->COP_ID)
+            ->whereNotIn('AST_CB', function($query) use ($locality) {
+                $query->select('code_bar')
+                    ->from('INV.T_BIENS_SCANNES')
+                    ->where('COP_ID', $locality->COP_ID)
+                    ->where('LOC_ID', $locality->LOC_ID);
+            })
+            ->count();
+        $result[] = [
+            'locality' => $locality->LOC_LIB,
+            'centre' => $locality->COP_ID,
+            'not_scanned_count' => $notScannedCount
+        ];
+    }
+
+    return response()->json(['localités' => $result], 200);
+}
+
+public function getLocalitiesWithNotScannedInventory()
+{
+    $localities = Localite::all();
+    $result = [];
+
+    foreach ($localities as $locality) {
+        $query = DB::table('INV.T_E_LOCATION_LOC as l')
+        ->join('INV.T_R_CENTRE_OPERATIONNEL_COP as c', 'l.COP_ID', '=', 'c.COP_ID')
+        ->leftJoin('INV.T_E_ASSET_AST as a', function($join) use($locality) {
+            $join->on('l.LOC_ID', '=', 'a.LOC_ID_INIT')
+                 ->whereNotIn('a.AST_CB', function($query) use($locality) {
+                     $query->select('code_bar')
+                           ->from('INV.T_BIENS_SCANNES')
+                           ->whereRaw('LOC_ID = a.LOC_ID_INIT')
+                           ->whereRaw('COP_ID = l.COP_ID');
+                 });
+        })
+        ->select('l.LOC_ID as locality_id', 'l.LOC_LIB as locality_name', 'c.COP_ID as centre_id', DB::raw('COUNT(a.AST_CB) as not_scanned_count'))
+        ->groupBy('l.LOC_ID', 'l.LOC_LIB', 'c.COP_ID')
+        ->get();
+
+        $result[] = $query->first();
+    }
+
+    return response()->json(['localités' => $result], 200);
+}
+
+public function getLocalitiesWithNotScannedInventorySQL()
+{
+    $query = "
+        SELECT
+          l.LOC_ID AS locality_id,
+          l.LOC_LIB AS locality_name,
+          l.COP_ID AS centre_id,
+          COUNT(a.AST_CB) AS not_scanned_count,
+          STRING_AGG(a.AST_CB, ', ') AS not_scanned_code_bars
+        FROM INV.T_E_LOCATION_LOC AS l
+        LEFT JOIN INV.T_E_ASSET_AST AS a
+          ON l.LOC_ID = a.LOC_ID_INIT
+        LEFT JOIN INV.T_BIENS_SCANNES AS b
+          ON b.code_bar = a.AST_CB AND b.LOC_ID = l.LOC_ID AND b.COP_ID = l.COP_ID
+        WHERE b.INV_ID IS NULL
+        GROUP BY l.LOC_ID, l.LOC_LIB, l.COP_ID
+    ";
+
+    $result = DB::select($query);
+
+    return response()->json(['localités' => $result], 200);
+}
+
+
+
+
+
+
 
 
 }
