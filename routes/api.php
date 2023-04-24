@@ -36,11 +36,11 @@ Route::controller(AdminController::class)->middleware('auth:sanctum')->group(fun
     Route::get('/localitesNonVisites','localitesNonVisites');
     Route::get('/localitesVisites','localitesVisites');
 });
-Route::controller(BiensScannesController::class)->middleware('auth:sanctum')->group(function(){
+Route::controller(BiensScannesController::class)->group(function(){
     Route::get('/biensScannes','index');
     Route::get('/listeInventairesScannes','listeInventairesScannes');
-    Route::get('/countScannedInventoryByCenter','countScannedInventoryByCenter');
-    Route::get('/countScannedInventoryByLocalite','countScannedInventoryByLocalite');
+    Route::get('/getLocalitiesWithScannedInventory','getLocalitiesWithScannedInventory');
+    Route::get('/getCentersWithScannedInventory','getCentersWithScannedInventory');
 });
 
 

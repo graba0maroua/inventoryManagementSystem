@@ -66,7 +66,55 @@ public function listeInventairesScannes(Request $request)
     }
     return response()->json(['inventoryList' => $scannedInventory], 200);
 }
+public function CountScannedInvByLocalities()
+{
+    $localities = Localite::all();
+    $result = [];
 
+    foreach ($localities as $locality) {
+        $count = BiensScannes::where('LOC_ID', $locality->LOC_ID)->count();
+        $result[] = [
+            'locality' => $locality->LOC_LIB,
+            'count' => $count
+        ];
+    }
+
+    return response()->json(['localities' => $result], 200);
+}
+public function getLocalitiesWithScannedInventory()
+{
+    $localities = Localite::all();
+    $result = [];
+
+    foreach ($localities as $locality) {
+        $count = BiensScannes::where('LOC_ID', $locality->LOC_ID)
+            ->where('COP_ID', $locality->COP_ID)
+            ->count();
+        $result[] = [
+            'locality' => $locality->LOC_LIB,
+            'centre'=>$locality->COP_ID,
+            'count' => $count
+        ];
+    }
+
+    return response()->json(['localities' => $result], 200);
+}
+public function getCentersWithScannedInventory()
+{
+    $centers = Centre::all();
+    $result = [];
+    foreach ($centers as $center) {
+        $count = BiensScannes::where('COP_ID', $center->COP_ID)->count();
+        $result[] = [
+            'center_id' => $center->COP_ID,
+            'center_name' => $center->COP_LIB,
+            'count' => $count
+        ];
+
+    }
+
+    return response()->json(['centres' => $result], 200);
+}
 
 
 }
