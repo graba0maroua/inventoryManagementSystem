@@ -13,7 +13,7 @@ class Assets extends Model
 {
     use HasFactory;
     protected $table = 'INV.T_E_ASSET_AST';
-    protected $primaryKey = 'AST';
+    protected $primaryKey = 'AST_ID';
     public $timestamps = false;
     public $incrementing = false;
     protected $keyType = 'string';
