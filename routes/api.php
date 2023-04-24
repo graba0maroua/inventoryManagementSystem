@@ -41,6 +41,7 @@ Route::controller(BiensScannesController::class)->group(function(){
     Route::get('/listeInventairesScannes','listeInventairesScannes');
     Route::get('/getLocalitiesWithScannedInventory','getLocalitiesWithScannedInventory');
     Route::get('/getCentersWithScannedInventory','getCentersWithScannedInventory');
+    Route::get('/getUnitsWithScannedInventory','getUnitsWithScannedInventory');
 });
 
 

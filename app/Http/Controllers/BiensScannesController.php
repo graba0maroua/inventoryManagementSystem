@@ -6,6 +6,7 @@ use App\Models\BiensScannes;
 use App\Models\Centre;
 use App\Models\Equipe;
 use App\Models\Localite;
+use App\Models\Unite;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Auth;
@@ -66,21 +67,6 @@ public function listeInventairesScannes(Request $request)
     }
     return response()->json(['inventoryList' => $scannedInventory], 200);
 }
-public function CountScannedInvByLocalities()
-{
-    $localities = Localite::all();
-    $result = [];
-
-    foreach ($localities as $locality) {
-        $count = BiensScannes::where('LOC_ID', $locality->LOC_ID)->count();
-        $result[] = [
-            'locality' => $locality->LOC_LIB,
-            'count' => $count
-        ];
-    }
-
-    return response()->json(['localities' => $result], 200);
-}
 public function getLocalitiesWithScannedInventory()
 {
     $localities = Localite::all();
@@ -97,7 +83,7 @@ public function getLocalitiesWithScannedInventory()
         ];
     }
 
-    return response()->json(['localities' => $result], 200);
+    return response()->json(['localités' => $result], 200);
 }
 public function getCentersWithScannedInventory()
 {
@@ -116,5 +102,24 @@ public function getCentersWithScannedInventory()
     return response()->json(['centres' => $result], 200);
 }
 
+public function getUnitsWithScannedInventory()
+{
+    $units = Unite::all();
+    $result = [];
+
+    foreach ($units as $unit) {
+        $centers = Centre::where('UCM_ID', $unit->UCM_ID)->get();
+        $copIds = $centers->pluck('COP_ID');
+
+        $count = BiensScannes::whereIn('COP_ID', $copIds)->count();
+
+        $result[] = [
+            'unit' => $unit->UCM_LIB,
+            'unit-id'=>$unit->UCM_ID,
+            'count' => $count
+        ];
+    }
+    return response()->json(['units' => $result], 200);
+}
 
 }
