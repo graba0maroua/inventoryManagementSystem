@@ -4,6 +4,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BiensScannesController;
 use App\Http\Controllers\CentreController;
+use App\Http\Controllers\DemandeCompteController;
 use App\Http\Controllers\EquipeController;
 use App\Http\Controllers\LocaliteController;
 use App\Http\Controllers\UniteController;
@@ -53,4 +54,5 @@ Route::controller(BiensScannesController::class)->middleware('auth:sanctum')->gr
 });
 
 // Route::post('/storeEquipe',[EquipeController::class,'store']);
+Route::get('/getDemandes',[DemandeCompteController::class,'getDemandes']);
 

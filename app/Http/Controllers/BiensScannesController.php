@@ -21,7 +21,7 @@ class BiensScannesController extends Controller
     }
 //* Filtrer liste d'inventaires par structure
 // *TESTED
-public function listeInventairesScannes(Request $request) //! add liste non scanne 
+public function listeInventairesScannes(Request $request) //! add liste non scanne
 {
     $user = Auth::user();
     if (!$user) {
