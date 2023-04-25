@@ -27,5 +27,8 @@ class Localite extends Model
     {
         return $this->hasMany(BiensScannes::class,'LOC_ID','LOC_ID');
     }
-
+    public function equipes()
+    {
+        return $this->belongsToMany(Equipe::class);
+    }
 }

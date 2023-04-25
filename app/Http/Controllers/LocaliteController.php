@@ -53,5 +53,5 @@ class LocaliteController extends Controller
 
         return response()->json($visitedLocalities);
     }
-    
+
 }
