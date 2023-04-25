@@ -14,6 +14,6 @@ class Equipe extends Model
     public $incrementing = false;
     public function localites()
     {
-        return $this->belongsToMany(Localite::class, 'equipe_localite', 'GROUPE_ID', 'LOC_ID');
+        return $this->belongsToMany(Localite::class);
     }
 }
