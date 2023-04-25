@@ -29,6 +29,6 @@ class Localite extends Model
     }
     public function equipes()
     {
-        return $this->belongsToMany(Equipe::class);
+        return $this->belongsToMany(Equipe::class, 'equipe_localite', 'LOC_ID', 'GROUPE_ID');
     }
 }

@@ -191,7 +191,7 @@ public function getLocalitiesWithNotScannedInventory()
     $localities = Localite::all();
     $result = [];
 
-    foreach ($localities as $locality) {
+    foreach ($localities as $locality) { //? query builder
         $query = DB::table('INV.T_E_LOCATION_LOC as l')
         ->join('INV.T_R_CENTRE_OPERATIONNEL_COP as c', 'l.COP_ID', '=', 'c.COP_ID')
         ->leftJoin('INV.T_E_ASSET_AST as a', function($join) use($locality) {
@@ -213,7 +213,7 @@ public function getLocalitiesWithNotScannedInventory()
     return response()->json(['localités' => $result], 200);
 }
 
-public function getLocalitiesWithNotScannedInventorySQL()
+public function getLocalitiesWithNotScannedInventorySQL() //? RAW SQL
 {
     $query = "
         SELECT

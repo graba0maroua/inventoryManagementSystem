@@ -12,4 +12,8 @@ class Equipe extends Model
     protected $fillable = ['GROUPE_ID', 'EMP_ID', 'EMP_IS_MANAGER','YEAR','EMP_FULLNAME','COP_ID'];
     protected $primaryKey = ['GROUPE_ID'];
     public $incrementing = false;
+    public function localites()
+    {
+        return $this->belongsToMany(Localite::class, 'equipe_localite', 'GROUPE_ID', 'LOC_ID');
+    }
 }
