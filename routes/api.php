@@ -4,6 +4,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BiensScannesController;
 use App\Http\Controllers\CentreController;
+use App\Http\Controllers\EquipeController;
 use App\Http\Controllers\LocaliteController;
 use App\Http\Controllers\UniteController;
 use Illuminate\Http\Request;
@@ -36,7 +37,7 @@ Route::controller(AdminController::class)->middleware('auth:sanctum')->group(fun
     Route::get('/localitesNonVisites','localitesNonVisites');
     Route::get('/localitesVisites','localitesVisites');
 });
-Route::controller(BiensScannesController::class)->group(function(){
+Route::controller(BiensScannesController::class)->middleware('auth:sanctum')->group(function(){
     Route::get('/biensScannes','index');
     Route::get('/listeInventairesScannes','listeInventairesScannes');
     Route::get('/getLocalitiesWithScannedInventory','getLocalitiesWithScannedInventory');
@@ -44,9 +45,12 @@ Route::controller(BiensScannesController::class)->group(function(){
     Route::get('/getUnitsWithScannedInventory','getUnitsWithScannedInventory');
     Route::get('/getCentersWithNotScannedInventorySQL','getCentersWithNotScannedInventorySQL');
     Route::get('/getUnitsWithNotScannedInventorySQL','getUnitsWithNotScannedInventorySQL');
-    Route::get('/getLocalitiesWithNotScannedInventoryy','getLocalitiesWithNotScannedInventoryy');
+
+    Route::get('/getLocalitiesWithNotScannedInventoryy','getLocalitiesWithNotScannedInventoryy');//*execution time exeeded
+    Route::get('/getLocalitiesWithNotScannedInventory','getLocalitiesWithNotScannedInventory'); //*execution time exeeded
+    Route::get('/getLocalitiesWithNotScannedInventorySQL','getLocalitiesWithNotScannedInventorySQL');
 
 });
 
-
+// Route::post('/storeEquipe',[EquipeController::class,'store']);
 

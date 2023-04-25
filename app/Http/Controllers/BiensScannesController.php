@@ -74,7 +74,7 @@ public function getLocalitiesWithScannedInventory()
 {
     $localities = Localite::all();
     $result = [];
-
+$total=0;
     foreach ($localities as $locality) {
         $count = BiensScannes::where('LOC_ID', $locality->LOC_ID)
             ->where('COP_ID', $locality->COP_ID)
@@ -84,9 +84,10 @@ public function getLocalitiesWithScannedInventory()
             'centre'=>$locality->COP_ID,
             'count' => $count
         ];
+        $total=$total+$count;
     }
 
-    return response()->json(['localités' => $result], 200);
+    return response()->json(['localités' => $result,$total], 200);
 }
 //*TESTED
 public function getCentersWithScannedInventory()
