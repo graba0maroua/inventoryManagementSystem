@@ -21,7 +21,7 @@ class BiensScannesController extends Controller
     }
 //* Filtrer liste d'inventaires par structure
 // *TESTED
-public function listeInventairesScannes(Request $request)
+public function listeInventairesScannes(Request $request) //! add liste non scanne 
 {
     $user = Auth::user();
     if (!$user) {
@@ -186,12 +186,12 @@ public function getLocalitiesWithNotScannedInventoryy()//? ELEQUENT
     return response()->json(['localités' => $result], 200);
 }
 
-public function getLocalitiesWithNotScannedInventory()
+public function getLocalitiesWithNotScannedInventory() //!modify join  aset mea bienScanne
 {
     $localities = Localite::all();
     $result = [];
 
-    foreach ($localities as $locality) { //? query builder
+    foreach ($localities as $locality) {
         $query = DB::table('INV.T_E_LOCATION_LOC as l')
         ->join('INV.T_R_CENTRE_OPERATIONNEL_COP as c', 'l.COP_ID', '=', 'c.COP_ID')
         ->leftJoin('INV.T_E_ASSET_AST as a', function($join) use($locality) {
@@ -213,7 +213,7 @@ public function getLocalitiesWithNotScannedInventory()
     return response()->json(['localités' => $result], 200);
 }
 
-public function getLocalitiesWithNotScannedInventorySQL() //? RAW SQL
+public function getLocalitiesWithNotScannedInventorySQL() //! modify left join §§§
 {
     $query = "
         SELECT
@@ -235,12 +235,5 @@ public function getLocalitiesWithNotScannedInventorySQL() //? RAW SQL
 
     return response()->json(['localités' => $result], 200);
 }
-
-
-
-
-
-
-
 
 }
