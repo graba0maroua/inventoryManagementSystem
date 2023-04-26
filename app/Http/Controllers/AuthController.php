@@ -100,7 +100,7 @@ class AuthController extends Controller
         ], 401);
     }
     if (!$user->Compte_isActivated) {
-        return response()->json(['message' => 'Your account has not been activated yet'], 401);
+        return response()->json(['message' => 'Your account is not activated'], 401);
     }
 
     $demandeCompte = $user->demandeCompte;
