@@ -50,6 +50,7 @@ Route::controller(BiensScannesController::class)->middleware('auth:sanctum')->gr
     Route::get('/getLocalitiesWithNotScannedInventoryy','getLocalitiesWithNotScannedInventoryy');//*execution time exeeded
     Route::get('/getLocalitiesWithNotScannedInventory','getLocalitiesWithNotScannedInventory'); //*execution time exeeded
     Route::get('/getLocalitiesWithNotScannedInventorySQL','getLocalitiesWithNotScannedInventorySQL');
+    Route::get('/getLocalitiesWithNotScannedInventorySQL2','getLocalitiesWithNotScannedInventorySQL2');
 
 });
 
