@@ -294,7 +294,7 @@ public function getCentersInventoryCounts()
         GROUP BY c.COP_ID, c.COP_LIB
     ");
 
-    return response()->json(['centres' => $result], 200);
+    return response()->json($result);
 }
 
 
