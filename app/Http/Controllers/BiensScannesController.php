@@ -378,7 +378,12 @@ public function getCentersInventoryCountts()
         if ($row->total_count == 0) {
             $row->percentage = 0;
         } else {
-            $row->percentage = number_format(($row->scanned_count / $row->total_count) * 100, 2);
+            $num = ($row->scanned_count / $row->total_count) * 100;
+            if (($num * 10) % 10 <= 5) {
+              $row->percentage = floor($num);
+            } else {
+              $row->percentage = ceil($num);
+            }
         }
     }
 
