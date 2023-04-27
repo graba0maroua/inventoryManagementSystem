@@ -69,7 +69,7 @@ class AuthController extends Controller
             'role_id' => $role->id,
             // 'structure_type' => get_class($structure),
             'structure_type' => $structureType,
-            'structure_id' => $structure->getKey(),
+            'structure_id' => $structure->getKey()
 
         ]);
 

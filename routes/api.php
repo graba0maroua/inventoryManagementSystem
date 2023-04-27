@@ -41,6 +41,9 @@ Route::controller(AdminController::class)->middleware('auth:sanctum')->group(fun
 Route::controller(BiensScannesController::class)->middleware('auth:sanctum')->group(function(){
     Route::get('/biensScannes','index');
     Route::get('/listeInventairesScannes','listeInventairesScannes');
+    Route::get('/listeInventairesScanness','listeInventairesScanness');
+    Route::get('/getCentersInventoryCounts','getCentersInventoryCounts');
+
     Route::get('/getLocalitiesWithScannedInventory','getLocalitiesWithScannedInventory');
     Route::get('/getCentersWithScannedInventory','getCentersWithScannedInventory');
     Route::get('/getUnitsWithScannedInventory','getUnitsWithScannedInventory');

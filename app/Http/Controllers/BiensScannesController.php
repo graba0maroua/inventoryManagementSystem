@@ -21,6 +21,34 @@ class BiensScannesController extends Controller
     }
 //* Filtrer liste d'inventaires par structure
 // *TESTED
+
+public function listeInventairesScanness(Request $request)
+{
+    $user = Auth::user();
+    if (!$user) {
+        return response()->json(['message' => 'User not found'], 404);
+    }
+
+    switch ($user->role_id) {
+        case '1': // role id = 1 => chef unité
+            // Get all centers for user's unit
+            $centers = Centre::where('UCM_ID', $user->structure_id)->get();
+            $copIds = $centers->pluck('COP_ID');
+            // Get scanned inventory for user's centers
+            $scannedInventory = BiensScannes::whereIn('COP_ID', $copIds)->pluck('code_bar')->toArray();
+            // Get non-scanned inventory for user's centers
+            $nonScannedInventory = Assets::whereNotIn('code_bar', $scannedInventory)->whereIn('COP_ID', $copIds)->get();
+            break;
+        case '2': //role id = 2 => chef centre
+            $scannedInventory = BiensScannes::where('COP_ID', $user->structure_id)->pluck('INV_ID')->toArray();
+            $nonScannedInventory = Assets::whereNotIn('INV_ID', $scannedInventory)->where('COP_ID', $user->structure_id)->get();
+            break;
+
+        }
+        return response()->json(['ScannedinventoryList' => $scannedInventory,'NotScannedinventoryList' => $nonScannedInventory], 200);}
+
+
+
 public function listeInventairesScannes(Request $request) //! add liste non scanne
 {
     $user = Auth::user();
@@ -252,5 +280,23 @@ GROUP BY LOC_ID_INIT, LOC_LIB_INIT, COP_ID;
 
     return response()->json(['localités' => $result], 200);
 }
+
+public function getCentersInventoryCounts()
+{
+    $result = DB::select("
+        SELECT c.COP_ID AS center_id, c.COP_LIB AS center_name,
+            COUNT(a.AST_CB) AS total_count,
+            COUNT(b.code_bar) AS scanned_count,
+            COUNT(a.AST_CB) - COUNT(b.code_bar) AS not_scanned_count
+        FROM INV.T_R_CENTRE_OPERATIONNEL_COP c
+        LEFT JOIN INV.T_E_ASSET_AST a ON c.COP_ID = a.COP_ID
+        LEFT JOIN INV.T_BIENS_SCANNES b ON b.code_bar = a.AST_CB AND b.COP_ID = c.COP_ID
+        GROUP BY c.COP_ID, c.COP_LIB
+    ");
+
+    return response()->json(['centres' => $result], 200);
+}
+
+
 
 }
