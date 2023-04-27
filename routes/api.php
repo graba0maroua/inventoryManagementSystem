@@ -43,6 +43,9 @@ Route::controller(BiensScannesController::class)->middleware('auth:sanctum')->gr
     Route::get('/listeInventairesScannes','listeInventairesScannes');
     Route::get('/listeInventairesScanness','listeInventairesScanness');
     Route::get('/getCentersInventoryCounts','getCentersInventoryCounts');
+    Route::get('/getCentersInventoryCountss','getCentersInventoryCountss');
+    Route::get('/getCentersInventoryInfo','getCentersInventoryInfo');
+    Route::get('/getCentersInventoryCountts','getCentersInventoryCountts');
 
     Route::get('/getLocalitiesWithScannedInventory','getLocalitiesWithScannedInventory');
     Route::get('/getCentersWithScannedInventory','getCentersWithScannedInventory');

@@ -284,7 +284,37 @@ GROUP BY LOC_ID_INIT, LOC_LIB_INIT, COP_ID;
 public function getCentersInventoryCounts()
 {
     $result = DB::select("
-        SELECT c.COP_ID AS center_id, c.COP_LIB AS center_name,
+    SELECT c.COP_ID AS center_id, c.COP_LIB AS center_name,
+    COUNT(a.AST_CB) AS total_count,
+    COUNT(b.code_bar) AS scanned_count,
+    COUNT(a.AST_CB) - COUNT(b.code_bar) AS not_scanned_count
+FROM INV.T_R_CENTRE_OPERATIONNEL_COP c
+LEFT JOIN INV.T_E_ASSET_AST a ON c.COP_ID = a.COP_ID
+LEFT JOIN INV.T_BIENS_SCANNES b ON b.code_bar = a.AST_CB AND b.COP_ID = c.COP_ID
+GROUP BY c.COP_ID, c.COP_LIB
+    ");
+
+    return response()->json($result);
+}
+// public function getCentersInventoryCounts()
+// {
+//     $result = DB::select("
+//         SELECT c.COP_ID AS center_id, c.COP_LIB AS center_name,
+//             COUNT(a.AST_CB) AS total_count,
+//             COUNT(b.code_bar) AS scanned_count,
+//             COUNT(a.AST_CB) - COUNT(b.code_bar) AS not_scanned_count
+//         FROM INV.T_R_CENTRE_OPERATIONNEL_COP c
+//         LEFT JOIN INV.T_E_ASSET_AST a ON c.COP_ID = a.COP_ID
+//         LEFT JOIN INV.T_BIENS_SCANNES b ON b.code_bar = a.AST_CB AND b.COP_ID = c.COP_ID
+//         GROUP BY c.COP_ID, c.COP_LIB
+//     ");
+
+//     return response()->json($result);
+// }
+public function getCentersInventoryCountsss()
+{
+    $result = DB::select("
+      SELECT c.COP_ID AS center_id, c.COP_LIB AS center_name,
             COUNT(a.AST_CB) AS total_count,
             COUNT(b.code_bar) AS scanned_count,
             COUNT(a.AST_CB) - COUNT(b.code_bar) AS not_scanned_count
@@ -297,6 +327,63 @@ public function getCentersInventoryCounts()
     return response()->json($result);
 }
 
+public function getCentersInventoryInfo()
+{
+    $centers = Centre::all();
+
+    $result = [];
+    foreach ($centers as $center) {
+        $scannedCount = BiensScannes::where('COP_ID', $center->COP_ID)->count();
+        $totalCount = Assets::where('COP_ID', $center->COP_ID)->count();
+
+        if ($totalCount == 0) {
+            $percentage = 0;
+        } else {
+            $percentage = ($scannedCount / $totalCount) * 100;
+        }
+
+        $notScannedCount = DB::select("
+            SELECT COUNT(a.AST_CB) AS not_scanned_count
+            FROM INV.T_E_ASSET_AST a
+            LEFT JOIN INV.T_BIENS_SCANNES b ON a.AST_CB = b.code_bar
+            WHERE a.COP_ID = ? AND b.INV_ID IS NULL
+        ", [$center->COP_ID])[0]->not_scanned_count;
+
+        $result[] = [
+            'center_id' => $center->COP_ID,
+            'center_name' => $center->COP_LIB,
+            'scanned_count' => $scannedCount,
+            'not_scanned_count' => $notScannedCount,
+            'percentage' => $percentage
+        ];
+    }
+
+    return response()->json(['centres' => $result], 200);
+}
+
+public function getCentersInventoryCountts()
+{
+    $result = DB::select("
+        SELECT c.COP_ID AS center_id, c.COP_LIB AS center_name,
+            COUNT(a.AST_CB) AS total_count,
+            COUNT(b.code_bar) AS scanned_count,
+            COUNT(a.AST_CB) - COUNT(b.code_bar) AS not_scanned_count
+        FROM INV.T_R_CENTRE_OPERATIONNEL_COP c
+        LEFT JOIN INV.T_E_ASSET_AST a ON c.COP_ID = a.COP_ID
+        LEFT JOIN INV.T_BIENS_SCANNES b ON b.code_bar = a.AST_CB AND b.COP_ID = c.COP_ID
+        GROUP BY c.COP_ID, c.COP_LIB
+    ");
+
+    foreach ($result as $row) {
+        if ($row->total_count == 0) {
+            $row->percentage = 0;
+        } else {
+            $row->percentage = number_format(($row->scanned_count / $row->total_count) * 100, 2);
+        }
+    }
+
+    return response()->json($result);
+}
 
 
 }
