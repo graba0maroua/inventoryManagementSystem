@@ -280,98 +280,107 @@ GROUP BY LOC_ID_INIT, LOC_LIB_INIT, COP_ID;
 
     return response()->json(['localités' => $result], 200);
 }
-
-public function getCentersInventoryCounts()
+// * INFRASTRUCTURE : CENTRE
+public function infrastructureCentre()
 {
     $result = DB::select("
     SELECT c.COP_ID AS center_id, c.COP_LIB AS center_name,
-    COUNT(a.AST_CB) AS total_count,
-    COUNT(b.code_bar) AS scanned_count,
-    COUNT(a.AST_CB) - COUNT(b.code_bar) AS not_scanned_count
+    COUNT(DISTINCT a.AST_CB) AS total_count,
+    COUNT(DISTINCT b.code_bar) AS scanned_count,
+    COUNT(DISTINCT a.AST_CB) - COUNT(DISTINCT b.code_bar) AS not_scanned_count
 FROM INV.T_R_CENTRE_OPERATIONNEL_COP c
 LEFT JOIN INV.T_E_ASSET_AST a ON c.COP_ID = a.COP_ID
 LEFT JOIN INV.T_BIENS_SCANNES b ON b.code_bar = a.AST_CB AND b.COP_ID = c.COP_ID
+LEFT JOIN (
+ SELECT COP_ID, COUNT(DISTINCT AST_CB) AS not_scanned_count
+ FROM INV.T_E_ASSET_AST
+ WHERE AST_CB NOT IN (
+     SELECT code_bar FROM INV.T_BIENS_SCANNES WHERE COP_ID = T_E_ASSET_AST.COP_ID
+ )
+ GROUP BY COP_ID
+) AS c2 ON c.COP_ID = c2.COP_ID
 GROUP BY c.COP_ID, c.COP_LIB
     ");
 
-    return response()->json($result);
-}
-// public function getCentersInventoryCounts()
-// {
-//     $result = DB::select("
-//         SELECT c.COP_ID AS center_id, c.COP_LIB AS center_name,
-//             COUNT(a.AST_CB) AS total_count,
-//             COUNT(b.code_bar) AS scanned_count,
-//             COUNT(a.AST_CB) - COUNT(b.code_bar) AS not_scanned_count
-//         FROM INV.T_R_CENTRE_OPERATIONNEL_COP c
-//         LEFT JOIN INV.T_E_ASSET_AST a ON c.COP_ID = a.COP_ID
-//         LEFT JOIN INV.T_BIENS_SCANNES b ON b.code_bar = a.AST_CB AND b.COP_ID = c.COP_ID
-//         GROUP BY c.COP_ID, c.COP_LIB
-//     ");
-
-//     return response()->json($result);
-// }
-public function getCentersInventoryCountsss()
-{
-    $result = DB::select("
-      SELECT c.COP_ID AS center_id, c.COP_LIB AS center_name,
-            COUNT(a.AST_CB) AS total_count,
-            COUNT(b.code_bar) AS scanned_count,
-            COUNT(a.AST_CB) - COUNT(b.code_bar) AS not_scanned_count
-        FROM INV.T_R_CENTRE_OPERATIONNEL_COP c
-        LEFT JOIN INV.T_E_ASSET_AST a ON c.COP_ID = a.COP_ID
-        LEFT JOIN INV.T_BIENS_SCANNES b ON b.code_bar = a.AST_CB AND b.COP_ID = c.COP_ID
-        GROUP BY c.COP_ID, c.COP_LIB
-    ");
-
-    return response()->json($result);
-}
-
-public function getCentersInventoryInfo()
-{
-    $centers = Centre::all();
-
-    $result = [];
-    foreach ($centers as $center) {
-        $scannedCount = BiensScannes::where('COP_ID', $center->COP_ID)->count();
-        $totalCount = Assets::where('COP_ID', $center->COP_ID)->count();
-
-        if ($totalCount == 0) {
-            $percentage = 0;
+    foreach ($result as $row) {
+        if ($row->total_count == 0) {
+            $row->percentage = 0;
         } else {
-            $percentage = ($scannedCount / $totalCount) * 100;
+            $num = ($row->scanned_count / $row->total_count) * 100;
+            if (($num * 10) % 10 <= 5) {
+              $row->percentage = floor($num);
+            } else {
+              $row->percentage = ceil($num);
+            }
         }
-
-        $notScannedCount = DB::select("
-            SELECT COUNT(a.AST_CB) AS not_scanned_count
-            FROM INV.T_E_ASSET_AST a
-            LEFT JOIN INV.T_BIENS_SCANNES b ON a.AST_CB = b.code_bar
-            WHERE a.COP_ID = ? AND b.INV_ID IS NULL
-        ", [$center->COP_ID])[0]->not_scanned_count;
-
-        $result[] = [
-            'center_id' => $center->COP_ID,
-            'center_name' => $center->COP_LIB,
-            'scanned_count' => $scannedCount,
-            'not_scanned_count' => $notScannedCount,
-            'percentage' => $percentage
-        ];
     }
 
-    return response()->json(['centres' => $result], 200);
+    return response()->json($result);
 }
-
-public function getCentersInventoryCountts()
+public function infrastructureLocalite()
 {
     $result = DB::select("
-        SELECT c.COP_ID AS center_id, c.COP_LIB AS center_name,
-            COUNT(a.AST_CB) AS total_count,
-            COUNT(b.code_bar) AS scanned_count,
-            COUNT(a.AST_CB) - COUNT(b.code_bar) AS not_scanned_count
-        FROM INV.T_R_CENTRE_OPERATIONNEL_COP c
-        LEFT JOIN INV.T_E_ASSET_AST a ON c.COP_ID = a.COP_ID
-        LEFT JOIN INV.T_BIENS_SCANNES b ON b.code_bar = a.AST_CB AND b.COP_ID = c.COP_ID
-        GROUP BY c.COP_ID, c.COP_LIB
+    SELECT
+    l.LOC_ID AS locality_id,
+    l.LOC_LIB AS locality_name,
+    COUNT(DISTINCT a.AST_CB) AS total_count,
+    COUNT(DISTINCT b.code_bar) AS scanned_count,
+    COUNT(DISTINCT a.AST_CB) - COUNT(DISTINCT b.code_bar) AS not_scanned_count
+FROM INV.T_E_LOCATION_LOC l
+LEFT JOIN INV.T_E_ASSET_AST a ON l.LOC_ID = a.LOC_ID_INIT
+LEFT JOIN INV.T_BIENS_SCANNES b ON b.code_bar = a.AST_CB AND b.LOC_ID = a.LOC_ID_INIT
+LEFT JOIN (
+    SELECT l.LOC_ID, COUNT(DISTINCT AST_CB) AS not_scanned_count
+    FROM INV.T_E_LOCATION_LOC l
+    LEFT JOIN INV.T_E_ASSET_AST a ON l.LOC_ID = a.LOC_ID_INIT
+    WHERE a.AST_CB NOT IN (
+        SELECT code_bar FROM INV.T_BIENS_SCANNES WHERE LOC_ID = l.LOC_ID
+    )
+    GROUP BY l.LOC_ID
+) AS l2 ON l.LOC_ID = l2.LOC_ID
+WHERE a.LOC_ID_INIT IS NOT NULL
+GROUP BY l.LOC_ID, l.LOC_LIB
+    ");
+
+    foreach ($result as $row) {
+        if ($row->total_count == 0) {
+            $row->percentage = 0;
+        } else {
+            $num = ($row->scanned_count / $row->total_count) * 100;
+            if (($num * 10) % 10 <= 5) {
+              $row->percentage = floor($num);
+            } else {
+              $row->percentage = ceil($num);
+            }
+        }
+    }
+
+    return response()->json($result);
+}
+public function infrastructureUnite()
+{
+    $result = DB::select("
+    SELECT
+    u.UCM_ID AS unit_id,
+    u.UCM_LIB AS unit_name,
+    COUNT(DISTINCT a.AST_CB) AS total_count,
+    COUNT(DISTINCT b.code_bar) AS scanned_count,
+    COUNT(DISTINCT a.AST_CB) - COUNT(DISTINCT b.code_bar) AS not_scanned_count
+   FROM INV.T_R_UNITE_COMPTABLE_UCM u
+LEFT JOIN INV.T_R_CENTRE_OPERATIONNEL_COP c ON u.UCM_ID = c.UCM_ID
+LEFT JOIN INV.T_E_ASSET_AST a ON c.COP_ID = a.COP_ID
+LEFT JOIN INV.T_BIENS_SCANNES b ON b.code_bar = a.AST_CB AND b.COP_ID = c.COP_ID
+LEFT JOIN (
+    SELECT u.UCM_ID, COUNT(DISTINCT AST_CB) AS not_scanned_count
+    FROM INV.T_R_UNITE_COMPTABLE_UCM u
+    LEFT JOIN INV.T_R_CENTRE_OPERATIONNEL_COP c ON u.UCM_ID = c.UCM_ID
+    LEFT JOIN INV.T_E_ASSET_AST a ON c.COP_ID = a.COP_ID
+    WHERE a.AST_CB NOT IN (
+        SELECT code_bar FROM INV.T_BIENS_SCANNES WHERE COP_ID = c.COP_ID
+    )
+    GROUP BY u.UCM_ID
+) AS c2 ON u.UCM_ID = c2.UCM_ID
+GROUP BY u.UCM_ID, u.UCM_LIB
     ");
 
     foreach ($result as $row) {
@@ -390,5 +399,18 @@ public function getCentersInventoryCountts()
     return response()->json($result);
 }
 
+// Here, we're selecting the unit ID and name from the T_R_UNITE_COMPTABLE_UCM table,
+// as well as the total count of assets (DISTINCT AST_CB) in that unit from the T_E_ASSET_AST table,
+//  the count of scanned assets (DISTINCT code_bar) from the T_BIENS_SCANNES table, and the count of assets that have not been scanned (which is the difference between the total count and the scanned count).
+// T_R_UNITE_COMPTABLE_UCM (u): This table contains information about the accounting units.
+// T_R_CENTRE_OPERATIONNEL_COP (c): This table contains information about the operational centers, including their corresponding accounting units.
+// T_E_ASSET_AST (a): This table contains information about the assets, including their corresponding operational centers.
+// T_BIENS_SCANNES (b): This table contains information about the assets that have been scanned, including their corresponding operational centers.
+// The LEFT JOIN keyword is used to join the tables, which means that all rows from the left table (in this case, u) will be included in the result set, regardless of whether there is a match in the right table (in this case, c).
 
+// We're joining the tables on the following columns:
+
+// u.UCM_ID = c.UCM_ID: This links the accounting units in T_R_UNITE_COMPTABLE_UCM with the corresponding operational centers in T_R_CENTRE_OPERATIONNEL_COP.
+// c.COP_ID = a.COP_ID: This links the operational centers in T_R_CENTRE_OPERATIONNEL_COP with the corresponding assets in T_E_ASSET_AST.
+// b.code_bar = a.AST_CB AND b.COP_ID = c.COP_ID: This links the assets in T_E_ASSET_AST with the scanned assets in T_BIENS
 }

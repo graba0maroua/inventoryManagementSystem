@@ -42,22 +42,9 @@ Route::controller(BiensScannesController::class)->group(function(){
     Route::get('/biensScannes','index');
     Route::get('/listeInventairesScannes','listeInventairesScannes');
     Route::get('/listeInventairesScanness','listeInventairesScanness');
-    Route::get('/getCentersInventoryCounts','getCentersInventoryCounts');
-    Route::get('/getCentersInventoryCountss','getCentersInventoryCountss');
-    Route::get('/getCentersInventoryInfo','getCentersInventoryInfo');
-    Route::get('/getCentersInventoryCountts','getCentersInventoryCountts');
-
-    Route::get('/getLocalitiesWithScannedInventory','getLocalitiesWithScannedInventory');
-    Route::get('/getCentersWithScannedInventory','getCentersWithScannedInventory');
-    Route::get('/getUnitsWithScannedInventory','getUnitsWithScannedInventory');
-    Route::get('/getCentersWithNotScannedInventorySQL','getCentersWithNotScannedInventorySQL');
-    Route::get('/getUnitsWithNotScannedInventorySQL','getUnitsWithNotScannedInventorySQL');
-
-    Route::get('/getLocalitiesWithNotScannedInventoryy','getLocalitiesWithNotScannedInventoryy');//*execution time exeeded
-    Route::get('/getLocalitiesWithNotScannedInventory','getLocalitiesWithNotScannedInventory'); //*execution time exeeded
-    Route::get('/getLocalitiesWithNotScannedInventorySQL','getLocalitiesWithNotScannedInventorySQL');
-    Route::get('/getLocalitiesWithNotScannedInventorySQL2','getLocalitiesWithNotScannedInventorySQL2');
-
+    Route::get('/infrastructureCentre','infrastructureCentre');
+    Route::get('/infrastructureUnite','infrastructureUnite');
+    Route::get('/infrastructureLocalite','infrastructureLocalite');
 });
 
 // Route::post('/storeEquipe',[EquipeController::class,'store']);
