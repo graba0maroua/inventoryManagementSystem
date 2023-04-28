@@ -75,4 +75,3 @@ function NotvisitedLocalities()
     return  ($unvisitedLocalities);
 }
 
-}
