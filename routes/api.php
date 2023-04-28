@@ -37,6 +37,7 @@ Route::controller(AdminController::class)->middleware('auth:sanctum')->group(fun
  Route::controller(LocaliteController::class)->middleware('auth:sanctum')->group(function(){
     Route::get('/localitesNonVisites','localitesNonVisites');
     Route::get('/localitesVisites','localitesVisites');
+    Route::get('/visitedLocalities','visitedLocalities');
 });
 Route::controller(BiensScannesController::class)->group(function(){
     Route::get('/biensScannes','index');
