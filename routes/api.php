@@ -48,6 +48,6 @@ Route::controller(BiensScannesController::class)->group(function(){
 
 // Route::post('/storeEquipe',[EquipeController::class,'store']);
 Route::get('/getDemandes',[DemandeCompteController::class,'getDemandes']);
-Route::get('/role',[AdminController::class,'role']);
+Route::get('/role',[AdminController::class,'role'])->middleware('auth:sanctum');
 
 
