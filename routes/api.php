@@ -35,9 +35,7 @@ Route::controller(AdminController::class)->middleware('auth:sanctum')->group(fun
 
 });
  Route::controller(LocaliteController::class)->middleware('auth:sanctum')->group(function(){
-    Route::get('/localitesNonVisites','localitesNonVisites');
-    Route::get('/localitesVisites','localitesVisites');
-    Route::get('/visitedLocalities','visitedLocalities');
+ Route::get('/localite','localite');
 });
 Route::controller(BiensScannesController::class)->group(function(){
     Route::get('/biensScannes','index');
@@ -50,4 +48,6 @@ Route::controller(BiensScannesController::class)->group(function(){
 
 // Route::post('/storeEquipe',[EquipeController::class,'store']);
 Route::get('/getDemandes',[DemandeCompteController::class,'getDemandes']);
+Route::get('/role',[AdminController::class,'role']);
+
 

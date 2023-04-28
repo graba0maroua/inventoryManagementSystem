@@ -58,5 +58,13 @@ class AdminController extends Controller
         $user->delete();
          return response()->json(['message' => 'User account has been deleted.'], 200);
     }
+    public function role(request $request)
+    {
+        $user = User::findOrFail($request->matricule);
+        $role = $user->role_id;
+        return response()->json($role);
+    }
+
+
 
 }

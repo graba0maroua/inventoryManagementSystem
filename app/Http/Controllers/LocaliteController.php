@@ -4,13 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\BiensScannes;
 use App\Models\Equipe;
-use App\Models\Localite;
-use App\Models\Unite;
-use Illuminate\Http\Request;
 use Auth;
 use DB;
 
-function visitedLocalities()
+function localite()
 {
     $user = Auth::user();
         if (!$user) {
@@ -40,9 +37,9 @@ function visitedLocalities()
     $unvisitedLocalities = array_diff($localities, $visitedLocalities);
 
     // Return the visited  localities
-    return  ($visitedLocalities);
+    return  $visitedLocalities;
 }
-function NotvisitedLocalities()
+function uwwu()
 {
     $user = Auth::user();
         if (!$user) {
@@ -72,6 +69,6 @@ function NotvisitedLocalities()
     $unvisitedLocalities = array_diff($localities, $visitedLocalities);
 
     // Return unvisited localities
-    return  ($unvisitedLocalities);
+    return  $unvisitedLocalities;
 }
 
