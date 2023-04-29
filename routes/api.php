@@ -54,5 +54,6 @@ Route::get('/getUnite',[UniteController::class,'index']);
 Route::get('/role',[AdminController::class,'role'])->middleware('auth:sanctum');
 Route::get('/listeInventairesScannes',[BiensScannesController::class,'listeInventairesScannes'])->middleware('auth:sanctum');
 Route::get('/listeInventairesScanness',[BiensScannesController::class,'listeInventairesScanness'])->middleware('auth:sanctum');
+Route::get('/inventoryList',[BiensScannesController::class,'inventoryList'])->middleware('auth:sanctum');
 
 

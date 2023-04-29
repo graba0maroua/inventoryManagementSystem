@@ -19,49 +19,61 @@ class BiensScannesController extends Controller
     {
         return BiensScannes::all();
     }
-//* Filtrer liste d'inventaires par structure
-public function listeInventairesScanness(Request $request)
+//* Filtrer liste d'inventaires par structurepublic
+public function inventoryList()
 {
     $user = Auth::user();
-
     if (!$user) {
         return response()->json(['message' => 'User not found'], 404);
     }
-
     switch ($user->role_id) {
         case '1': // role id = 1 => chef unité
-            // Get all centers for user's unit
-            $centers = DB::table('INV.T_R_CENTRE_OPERATIONNEL_COP')
-                       ->where('UCM_ID', $user->structure_id)
-                       ->get()
-                       ->pluck('COP_ID')
-                       ->toArray();
-
-            // Get scanned inventory for user's centers
-            $scannedInventoryQuery = "
-                SELECT code_bar
-                FROM INV.T_BIENS_SCANNES
-                WHERE COP_ID IN (". implode(',', $centers) .")
-            ";
-            $scannedInventory = DB::select($scannedInventoryQuery);
-            $scannedInventory = array_column($scannedInventory, 'code_bar');
-
-            // Get non-scanned inventory for user's centers
-            $nonScannedInventoryQuery = "
-                SELECT *
-                FROM INV.T_E_ASSET_AST
-                WHERE COP_ID IN (". implode(',', $centers) .")
-                    AND AST_CB NOT IN ('". implode("','", $scannedInventory) ."')
-            ";
-            $nonScannedInventory = DB::select($nonScannedInventoryQuery);
-
-            // Return the response with the scanned and non-scanned inventory
-            return response()->json([
-                'ScannedinventoryList' => $scannedInventory,
-                'NotScannedinventoryList' => $nonScannedInventory
-            ], 200);
-    }
+    $result = DB::select("
+    SELECT
+    a.COP_ID AS COP_ID,
+ a.AST_ID AS AST_ID,
+ a.AST_CB AS code_bar,
+ a.AST_LIB AS AST_LIB,
+ a.AST_VALBASE AS AST_VALBASE,
+ a.AST_DTE_ACQ AS AST_DTE_ACQ,
+ a.LOC_ID_INIT AS LOC_ID_INIT,
+ a.LOC_LIB_INIT AS LOC_LIB_INIT,
+             CASE
+                 WHEN b.code_bar IS NOT NULL THEN 'Scanned'
+                 ELSE 'Not Scanned'
+             END AS status
+         FROM INV.T_R_CENTRE_OPERATIONNEL_COP c
+         LEFT JOIN INV.T_E_ASSET_AST a ON c.COP_ID = a.COP_ID
+         LEFT JOIN INV.T_BIENS_SCANNES b ON b.code_bar = a.AST_CB AND b.COP_ID = c.COP_ID
+        WHERE c.UCM_ID = " . $user->structure_id
+    );
+break;
+case '2': //role id = 2 => chef centre
+    $result = DB::select("
+                SELECT
+                    a.COP_ID AS COP_ID,
+                    a.AST_ID AS AST_ID,
+                    a.AST_CB AS code_bar,
+                    a.AST_LIB AS AST_LIB,
+                    a.AST_VALBASE AS AST_VALBASE,
+                    a.AST_DTE_ACQ AS AST_DTE_ACQ,
+                    a.LOC_ID_INIT AS LOC_ID_INIT,
+                    a.LOC_LIB_INIT AS LOC_LIB_INIT,
+                    CASE
+                        WHEN b.code_bar IS NOT NULL THEN 'Scanned'
+                        ELSE 'Not Scanned'
+                    END AS status
+                FROM INV.T_R_CENTRE_OPERATIONNEL_COP c
+                LEFT JOIN INV.T_E_ASSET_AST a ON c.COP_ID = a.COP_ID
+                LEFT JOIN INV.T_BIENS_SCANNES b ON b.code_bar = a.AST_CB AND b.COP_ID = c.COP_ID
+                WHERE c.COP_ID = " . $user->structure_id
+            );
+            break;
 }
+
+    return response()->json($result);
+}
+
 
 
 // public function listeInventairesScanness(Request $request)
@@ -91,55 +103,55 @@ public function listeInventairesScanness(Request $request)
 
 
 
-public function listeInventairesScannes(Request $request) //! add liste non scanne
-{
-    $user = Auth::user();
-    if (!$user) {
-        return response()->json(['message' => 'User not found'], 404);
-    }
+// public function listeInventairesScannes(Request $request) //! add liste non scanne
+// {
+//     $user = Auth::user();
+//     if (!$user) {
+//         return response()->json(['message' => 'User not found'], 404);
+//     }
 
-    switch ($user->role_id) {
-        case '1': // role id = 1 => chef unité
-            // Get all centers for user's unit
-            $centers = Centre::where('UCM_ID', $user->structure_id)->get();
-            $copIds = $centers->pluck('COP_ID');
-            // Get scanned inventory for user's centers
-            $scannedInventory = BiensScannes::whereIn('COP_ID', $copIds)->get();
-            break;
-        case '2': //role id = 2 => chef centre
-            $scannedInventory = BiensScannes::where('COP_ID', $user->structure_id)->get();
-            break;
-        case '3'://role id = 3 => chef equipe
-            $scannedInventory = BiensScannes::whereIn('LOC_ID', function($query) use ($user) {
-                $query->select('LOC_ID')
-                    ->from('INV.T_BIENS_SCANNES')
-                    ->where('EMP_ID', $user->matricule)
-                    ->where('EMP_IS_MANAGER', 1)
-                    ->groupBy('LOC_ID');
-            })->whereIn('COP_ID', function($query) use ($user) {
-                $query->select('COP_ID')
-                    ->from('T_EQUIPE')
-                    ->where('EMP_ID', $user->matricule)
-                    ->where('EMP_IS_MANAGER', 1)
-                    ->groupBy('COP_ID', 'GROUPE_ID');
-            })->whereIn('GROUPE_ID', function($query) use ($user) {
-                $query->select('GROUPE_ID')
-                    ->from('T_EQUIPE')
-                    ->where('EMP_ID', $user->matricule)
-                    ->where('EMP_IS_MANAGER', 1)
-                    ->groupBy('COP_ID', 'GROUPE_ID');
-            })->get();
-            break;
-    }
-    // we are checking if the user is a team head (EMP_IS_MANAGER = 1) and retrieving the GROUPE_ID and COP_ID values from the Equipe table.
-    // We are then using these values to filter the scanned inventory list from the BiensScannes table.
-    //  We are also checking if the user is a team head for the same COP_ID and GROUPE_ID combination in the Equipe table
-    if ($scannedInventory->isEmpty()) {
-        return response()->json(['message' => 'No scanned inventory found'], 404);
-    }
-    return response()->json(['inventoryList' => $scannedInventory], 200);
-}
-// *TESTED
+//     switch ($user->role_id) {
+//         case '1': // role id = 1 => chef unité
+//             // Get all centers for user's unit
+//             $centers = Centre::where('UCM_ID', $user->structure_id)->get();
+//             $copIds = $centers->pluck('COP_ID');
+//             // Get scanned inventory for user's centers
+//             $scannedInventory = BiensScannes::whereIn('COP_ID', $copIds)->get();
+//             break;
+//         case '2': //role id = 2 => chef centre
+//             $scannedInventory = BiensScannes::where('COP_ID', $user->structure_id)->get();
+//             break;
+//         case '3'://role id = 3 => chef equipe
+//             $scannedInventory = BiensScannes::whereIn('LOC_ID', function($query) use ($user) {
+//                 $query->select('LOC_ID')
+//                     ->from('INV.T_BIENS_SCANNES')
+//                     ->where('EMP_ID', $user->matricule)
+//                     ->where('EMP_IS_MANAGER', 1)
+//                     ->groupBy('LOC_ID');
+//             })->whereIn('COP_ID', function($query) use ($user) {
+//                 $query->select('COP_ID')
+//                     ->from('T_EQUIPE')
+//                     ->where('EMP_ID', $user->matricule)
+//                     ->where('EMP_IS_MANAGER', 1)
+//                     ->groupBy('COP_ID', 'GROUPE_ID');
+//             })->whereIn('GROUPE_ID', function($query) use ($user) {
+//                 $query->select('GROUPE_ID')
+//                     ->from('T_EQUIPE')
+//                     ->where('EMP_ID', $user->matricule)
+//                     ->where('EMP_IS_MANAGER', 1)
+//                     ->groupBy('COP_ID', 'GROUPE_ID');
+//             })->get();
+//             break;
+//     }
+//     // we are checking if the user is a team head (EMP_IS_MANAGER = 1) and retrieving the GROUPE_ID and COP_ID values from the Equipe table.
+//     // We are then using these values to filter the scanned inventory list from the BiensScannes table.
+//     //  We are also checking if the user is a team head for the same COP_ID and GROUPE_ID combination in the Equipe table
+//     if ($scannedInventory->isEmpty()) {
+//         return response()->json(['message' => 'No scanned inventory found'], 404);
+//     }
+//     return response()->json(['inventoryList' => $scannedInventory], 200);
+// }
+// // *TESTED
 public function getLocalitiesWithScannedInventory()
 {
     $localities = Localite::all();
