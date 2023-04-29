@@ -35,12 +35,13 @@ Route::controller(AdminController::class)->middleware('auth:sanctum')->group(fun
 
 });
  Route::controller(LocaliteController::class)->middleware('auth:sanctum')->group(function(){
- Route::get('/localite','localite');
+ Route::get('/localiteVisite','localiteVisite');
+ Route::get('/localitNonVisite','localitNonVisite');
 });
 Route::controller(BiensScannesController::class)->group(function(){
     Route::get('/biensScannes','index');
-    Route::get('/listeInventairesScannes','listeInventairesScannes');
-    Route::get('/listeInventairesScanness','listeInventairesScanness');
+    // Route::get('/listeInventairesScannes','listeInventairesScannes');
+    // Route::get('/listeInventairesScanness','listeInventairesScanness');
     Route::get('/infrastructureCentre','infrastructureCentre');
     Route::get('/infrastructureUnite','infrastructureUnite');
     Route::get('/infrastructureLocalite','infrastructureLocalite');
@@ -48,6 +49,10 @@ Route::controller(BiensScannesController::class)->group(function(){
 
 // Route::post('/storeEquipe',[EquipeController::class,'store']);
 Route::get('/getDemandes',[DemandeCompteController::class,'getDemandes']);
+Route::get('/getUnite',[UniteController::class,'index']);
+
 Route::get('/role',[AdminController::class,'role'])->middleware('auth:sanctum');
+Route::get('/listeInventairesScannes',[BiensScannesController::class,'listeInventairesScannes'])->middleware('auth:sanctum');
+Route::get('/listeInventairesScanness',[BiensScannesController::class,'listeInventairesScanness'])->middleware('auth:sanctum');
 
 

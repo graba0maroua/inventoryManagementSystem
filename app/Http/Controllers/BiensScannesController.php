@@ -20,11 +20,10 @@ class BiensScannesController extends Controller
         return BiensScannes::all();
     }
 //* Filtrer liste d'inventaires par structure
-// *TESTED
-
 public function listeInventairesScanness(Request $request)
 {
     $user = Auth::user();
+
     if (!$user) {
         return response()->json(['message' => 'User not found'], 404);
     }
@@ -32,20 +31,63 @@ public function listeInventairesScanness(Request $request)
     switch ($user->role_id) {
         case '1': // role id = 1 => chef unité
             // Get all centers for user's unit
-            $centers = Centre::where('UCM_ID', $user->structure_id)->get();
-            $copIds = $centers->pluck('COP_ID');
-            // Get scanned inventory for user's centers
-            $scannedInventory = BiensScannes::whereIn('COP_ID', $copIds)->pluck('code_bar')->toArray();
-            // Get non-scanned inventory for user's centers
-            $nonScannedInventory = Assets::whereNotIn('code_bar', $scannedInventory)->whereIn('COP_ID', $copIds)->get();
-            break;
-        case '2': //role id = 2 => chef centre
-            $scannedInventory = BiensScannes::where('COP_ID', $user->structure_id)->pluck('INV_ID')->toArray();
-            $nonScannedInventory = Assets::whereNotIn('INV_ID', $scannedInventory)->where('COP_ID', $user->structure_id)->get();
-            break;
+            $centers = DB::table('INV.T_R_CENTRE_OPERATIONNEL_COP')
+                       ->where('UCM_ID', $user->structure_id)
+                       ->get()
+                       ->pluck('COP_ID')
+                       ->toArray();
 
-        }
-        return response()->json(['ScannedinventoryList' => $scannedInventory,'NotScannedinventoryList' => $nonScannedInventory], 200);}
+            // Get scanned inventory for user's centers
+            $scannedInventoryQuery = "
+                SELECT code_bar
+                FROM INV.T_BIENS_SCANNES
+                WHERE COP_ID IN (". implode(',', $centers) .")
+            ";
+            $scannedInventory = DB::select($scannedInventoryQuery);
+            $scannedInventory = array_column($scannedInventory, 'code_bar');
+
+            // Get non-scanned inventory for user's centers
+            $nonScannedInventoryQuery = "
+                SELECT *
+                FROM INV.T_E_ASSET_AST
+                WHERE COP_ID IN (". implode(',', $centers) .")
+                    AND AST_CB NOT IN ('". implode("','", $scannedInventory) ."')
+            ";
+            $nonScannedInventory = DB::select($nonScannedInventoryQuery);
+
+            // Return the response with the scanned and non-scanned inventory
+            return response()->json([
+                'ScannedinventoryList' => $scannedInventory,
+                'NotScannedinventoryList' => $nonScannedInventory
+            ], 200);
+    }
+}
+
+
+// public function listeInventairesScanness(Request $request)
+// {
+//     $user = Auth::user();
+//     if (!$user) {
+//         return response()->json(['message' => 'User not found'], 404);
+//     }
+
+//     switch ($user->role_id) {
+//         case '1': // role id = 1 => chef unité
+//             // Get all centers for user's unit
+//             $centers = Centre::where('UCM_ID', $user->structure_id)->get();
+//             $copIds = $centers->pluck('COP_ID');
+//             // Get scanned inventory for user's centers
+//             $scannedInventory = BiensScannes::whereIn('COP_ID', $copIds)->pluck('code_bar')->toArray();
+//             // Get non-scanned inventory for user's centers
+//             $nonScannedInventory = Assets::whereNotIn('code_bar', $scannedInventory)->whereIn('COP_ID', $copIds)->get();
+//             break;
+//         case '2': //role id = 2 => chef centre
+//             $scannedInventory = BiensScannes::where('COP_ID', $user->structure_id)->pluck('INV_ID')->toArray();
+//             $nonScannedInventory = Assets::whereNotIn('INV_ID', $scannedInventory)->where('COP_ID', $user->structure_id)->get();
+//             break;
+
+//         }
+//         return response()->json(['ScannedinventoryList' => $scannedInventory,'NotScannedinventoryList' => $nonScannedInventory], 200);}
 
 
 

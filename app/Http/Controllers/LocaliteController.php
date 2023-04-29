@@ -7,7 +7,7 @@ use App\Models\Equipe;
 use Auth;
 use DB;
 
-function localite()
+function localiteVisite()
 {
     $user = Auth::user();
         if (!$user) {
@@ -39,7 +39,7 @@ function localite()
     // Return the visited  localities
     return  $visitedLocalities;
 }
-function uwwu()
+function localitNonVisite()
 {
     $user = Auth::user();
         if (!$user) {
