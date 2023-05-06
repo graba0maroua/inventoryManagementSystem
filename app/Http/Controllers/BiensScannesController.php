@@ -158,7 +158,7 @@ LEFT JOIN (
 ) AS l2 ON l.LOC_ID = l2.LOC_ID
 WHERE a.LOC_ID_INIT IS NOT NULL
 GROUP BY l.LOC_ID, l.LOC_LIB
-    ");
+    ");//ignore LOC_ID_INIT = NULL
 
     foreach ($result as $row) {
         if ($row->total_count == 0) {
