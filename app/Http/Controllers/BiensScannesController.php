@@ -232,4 +232,37 @@ GROUP BY u.UCM_ID, u.UCM_LIB
 // u.UCM_ID = c.UCM_ID: This links the accounting units in T_R_UNITE_COMPTABLE_UCM with the corresponding operational centers in T_R_CENTRE_OPERATIONNEL_COP.
 // c.COP_ID = a.COP_ID: This links the operational centers in T_R_CENTRE_OPERATIONNEL_COP with the corresponding assets in T_E_ASSET_AST.
 // b.code_bar = a.AST_CB AND b.COP_ID = c.COP_ID: This links the assets in T_E_ASSET_AST with the scanned assets in T_BIENS
+function localiteVisite()
+{
+    $user = Auth::user();
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+    // Get the equipe with the specified ID
+    $groupId = Equipe::where('EMP_ID', $user->matricule)
+    ->where('EMP_IS_MANAGER', 1)
+    ->value('GROUPE_ID');
+ // Get the equipe's assigned localities
+    $localities = DB::table('equipe_localite')
+                    ->where('GROUPE_ID', $groupId)
+                    ->where('COP_ID', $user->structure_id)
+                    ->pluck('LOC_ID')
+                    ->toArray();
+
+    // Get the visited localities for the equipe
+    $visitedLocalities = DB::table('INV.T_BIENS_SCANNES')
+                            ->whereIn('LOC_ID', $localities)
+                            ->where('GROUPE_ID',$groupId)
+                            ->select('LOC_ID','LOC_LIB')
+                            ->distinct()
+                            ->pluck('LOC_ID','LOC_LIB')
+                            ->toArray();
+
+    // // Get the unvisited localities for the equipe
+    // $unvisitedLocalities = array_diff($localities, $visitedLocalities);
+
+    // Return the visited  localities
+    return  $visitedLocalities;
+}
+
 }
