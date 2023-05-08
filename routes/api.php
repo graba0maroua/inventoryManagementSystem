@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AssetsController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BiensScannesController;
 use App\Http\Controllers\CentreController;
@@ -38,9 +39,6 @@ Route::controller(AdminController::class)->group(function(){
 Route::controller(BiensScannesController::class)->middleware('auth:sanctum')->group(function(){
     Route::get('/biensScannes','index');
     Route::get('/inventoryList','inventoryList');
-    Route::get('/infrastructureCentre','infrastructureCentre');
-    Route::get('/infrastructureUnite','infrastructureUnite');
-    Route::get('/infrastructureLocalite','infrastructureLocalite');
     Route::get('/localiteVisite','localiteVisite');
 });
 
@@ -48,5 +46,10 @@ Route::controller(BiensScannesController::class)->middleware('auth:sanctum')->gr
 Route::get('/getDemandes',[DemandeCompteController::class,'getDemandes']);
 Route::get('/getUnite',[UniteController::class,'index']);
 Route::get('/role',[AdminController::class,'role'])->middleware('auth:sanctum');
+
+Route::get('/infrastructureUnite',[BiensScannesController::class,'infrastructureUnite']);
+Route::get('/infrastructureCentre',[BiensScannesController::class,'infrastructureCentre']);
+Route::get('/infrastructureLocalite',[BiensScannesController::class,'infrastructureLocalite']);
+Route::get('/fill_LOC_ID_INIT',[AssetsController::class,'fill_LOC_ID_INIT']);
 
 

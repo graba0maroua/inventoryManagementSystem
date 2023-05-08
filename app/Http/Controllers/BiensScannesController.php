@@ -51,7 +51,7 @@ break;
 case '2': //role id = 2 => chef centre
     $result = DB::select("
                 SELECT
-                    a.COP_ID AS COP_ID,
+                  c.COP_ID AS COP_ID,
                     a.AST_ID AS AST_ID,
                     a.AST_CB AS code_bar,
                     a.AST_LIB AS AST_LIB,
@@ -66,8 +66,8 @@ case '2': //role id = 2 => chef centre
                 FROM INV.T_R_CENTRE_OPERATIONNEL_COP c
                 LEFT JOIN INV.T_E_ASSET_AST a ON c.COP_ID = a.COP_ID
                 LEFT JOIN INV.T_BIENS_SCANNES b ON b.code_bar = a.AST_CB AND b.COP_ID = c.COP_ID
-                WHERE c.COP_ID = " . $user->structure_id
-            );
+                WHERE c.COP_ID = :structure_id
+                ", ['structure_id' => $user->structure_id]);
             break;
             case '3': // role id = 3 => chef equipe
                 $groupId = Equipe::where('EMP_ID', $user->matricule)

@@ -6,6 +6,9 @@ use App\Models\BiensScannes;
 use App\Models\Equipe;
 use Auth;
 use DB;
+class LocaliteController extends Controller{
+
+
 function NotVisited_Localites()
 {
     $user = Auth::user();
@@ -38,4 +41,8 @@ function NotVisited_Localites()
     // Return unvisited localities
     return  $unvisitedLocalities;
 }
+}
+
+
+
 
