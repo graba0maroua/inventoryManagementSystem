@@ -2,8 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\NewCompte;
+use App\Mail\NewDemandeCompte;
 use App\Models\DemandeCompte;
+use Auth;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class DemandeCompteController extends Controller
 {

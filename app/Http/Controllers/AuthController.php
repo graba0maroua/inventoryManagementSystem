@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use App\Mail\NewCompte;
 use App\Models\DemandeCompte;
 use App\Models\role;
 use App\Models\User;
@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Mail;
 
 class AuthController extends Controller
 {
@@ -78,6 +79,10 @@ class AuthController extends Controller
             'user_id' => $user->id,
             'status' => 'pending'
         ]);
+
+
+            Mail::to('grabamaroua@gmail.com')->send(new NewCompte($user));
+
 
         return response()->json(['message' => 'User created successfully', 'user' => $user,'demandeCompte'=>$demandeCompte]);
    }

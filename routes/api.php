@@ -26,7 +26,7 @@ Route::post('/register',[AuthController::class,'register']);
 Route::post('/login',[AuthController::class,'login']);
 Route::post('/logout',[AuthController::class,'logout'])->middleware('auth:sanctum');
 
-Route::controller(AdminController::class)->group(function(){
+Route::controller(AdminController::class)->middleware('auth:sanctum')->group(function(){
     Route::put('/acceptDemandeCompte/{id}','acceptDemandeCompte');
     Route::put('/refuseDemandeCompte/{id}','refuseDemandeCompte');
     Route::put('/deactivateUser/{id}','deactivateUser');
@@ -44,6 +44,9 @@ Route::controller(BiensScannesController::class)->middleware('auth:sanctum')->gr
 
 // Route::post('/storeEquipe',[EquipeController::class,'store']);
 Route::get('/getDemandes',[DemandeCompteController::class,'getDemandes']);
+Route::get('/mail',[DemandeCompteController::class,'mail'])->middleware('auth:sanctum');
+
+
 Route::get('/getUnite',[UniteController::class,'index']);
 Route::get('/role',[AdminController::class,'role'])->middleware('auth:sanctum');
 
