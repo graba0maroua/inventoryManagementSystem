@@ -4,6 +4,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AssetsController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BiensScannesController;
+use App\Http\Controllers\ExportController;
 use App\Http\Controllers\CentreController;
 use App\Http\Controllers\DemandeCompteController;
 use App\Http\Controllers\EquipeController;
@@ -21,6 +22,7 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+Route::get('/export/infrastructureunite', [ExportController::class, 'infrastructureUnitepdf']);
 
 Route::post('/register',[AuthController::class,'register']);
 Route::post('/login',[AuthController::class,'login']);
