@@ -12,6 +12,7 @@
         "laravel/sanctum": "^3.2",
         "laravel/tinker": "^2.8",
         "maatwebsite/excel": "^1.1",
+        "psr/simple-cache": "2.0",
         "thiagoprz/eloquent-composite-key": "^1.0"
     },
     "require-dev": {

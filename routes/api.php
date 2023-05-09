@@ -8,6 +8,7 @@ use App\Http\Controllers\ExportController;
 use App\Http\Controllers\CentreController;
 use App\Http\Controllers\DemandeCompteController;
 use App\Http\Controllers\EquipeController;
+use App\Http\Controllers\InventoryPlanController;
 use App\Http\Controllers\LocaliteController;
 use App\Http\Controllers\UniteController;
 use Illuminate\Http\Request;
@@ -37,6 +38,12 @@ Route::controller(AdminController::class)->middleware('auth:sanctum')->group(fun
 });
  Route::controller(LocaliteController::class)->middleware('auth:sanctum')->group(function(){
  Route::get('/NotVisited_Localites','NotVisited_Localites');
+});
+Route::controller(InventoryPlanController::class)->group(function(){
+    Route::get('/inventory-plan','index');
+    Route::post('/inventory-plan','store');
+    Route::put('/inventory-plan/{id}','update');
+    Route::delete('/inventory-plan/{id}','destroy');
 });
 Route::controller(BiensScannesController::class)->middleware('auth:sanctum')->group(function(){
     Route::get('/biensScannes','index');
