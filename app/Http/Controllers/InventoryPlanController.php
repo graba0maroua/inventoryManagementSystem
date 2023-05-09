@@ -56,15 +56,20 @@ class InventoryPlanController extends Controller
         return response()->json($mapping, 200);
     }
 
-
-    public function destroy($id)
+//! Show this to mohamed : ani dayra delete based on the 3 ids 
+    public function destroy($groupeId, $locId, $copId)
     {
-        // Find the mapping entry by ID
-        $mapping = EquipeLocalite::findOrFail($id);
+        $deletedRow = equipeLocalite::where('GROUPE_ID', $groupeId)
+            ->where('LOC_ID', $locId)
+            ->where('COP_ID', $copId)
+            ->first();
 
-        // Delete the mapping entry
-        $mapping->delete();
-
-        return response()->json(null, 204);
+        if ($deletedRow) {
+            $deletedRow->delete();
+            return response()->json(['message' => 'Row deleted successfully.']);
+        } else {
+            return response()->json(['message' => 'Row not found.'], 404);
+        }
     }
+
 }
