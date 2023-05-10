@@ -11,8 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class ChartsController extends Controller
-{
-    public function lineChart()
+{ public function lineChart()
     {
         $user = Auth::user();
 
@@ -233,5 +232,26 @@ GROUP BY u.UCM_ID
                     return $result;
                 }
 
+public function PieChart(){
+    $user = Auth::user();
+
+    if (!$user) {
+        return response()->json(['message' => 'User not found'], 404);
     }
+
+    switch ($user->role_id) {
+case '1': // role id = 1 => chef unité
+    break;
+case '2': // role id = 2 => chef centre
+    break;
+case '3': // role id = 2 => chef equipe
+
+
+
+
+
+
+    }
+}
+}
 
