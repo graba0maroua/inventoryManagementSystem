@@ -4,6 +4,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AssetsController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BiensScannesController;
+use App\Http\Controllers\ChartsController;
 use App\Http\Controllers\ExportController;
 use App\Http\Controllers\CentreController;
 use App\Http\Controllers\DemandeCompteController;
@@ -56,7 +57,10 @@ Route::get('/getDemandes',[DemandeCompteController::class,'getDemandes']);
 Route::get('/mail',[DemandeCompteController::class,'mail'])->middleware('auth:sanctum');
 
 
-Route::get('/getUnite',[UniteController::class,'index']);
+Route::get('/getUnite',[UniteController::class,'index'])->middleware('auth:sanctum');
+Route::get('/lineChart',[ChartsController::class,'lineChart'])->middleware('auth:sanctum');
+
+
 Route::get('/role',[AdminController::class,'role'])->middleware('auth:sanctum');
 
 Route::get('/infrastructureUnite',[BiensScannesController::class,'infrastructureUnite']);
