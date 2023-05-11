@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Assets;
 
+use App\Models\BiensScannes;
 use App\Models\Equipe;
 use Carbon\Carbon;
 use DB;
@@ -241,17 +242,141 @@ public function PieChart(){
 
     switch ($user->role_id) {
 case '1': // role id = 1 => chef unité
-    break;
-case '2': // role id = 2 => chef centre
-    break;
-case '3': // role id = 2 => chef equipe
+     // Retrieve the data for the pie chart
+     $data = DB::select("
+     SELECT
+         c.COP_ID AS center_id,
+         c.COP_LIB AS center_name,
+         COUNT(DISTINCT b.code_bar) AS scanned_count
+     FROM INV.T_R_UNITE_COMPTABLE_UCM u
+     LEFT JOIN INV.T_R_CENTRE_OPERATIONNEL_COP c ON u.UCM_ID = c.UCM_ID
+     LEFT JOIN INV.T_E_ASSET_AST a ON c.COP_ID = a.COP_ID
+     LEFT JOIN INV.T_BIENS_SCANNES b ON b.code_bar = a.AST_CB AND b.COP_ID = c.COP_ID
+     WHERE u.UCM_ID = '{$user->structure_id}'
+     GROUP BY c.COP_ID, c.COP_LIB
+ ");
+ break;
+ case '2':
+     // Retrieve all GROUPE_IDs in the user's center
+     $groupeIds = Equipe::where('COP_ID', $user->structure_id)->pluck('GROUPE_ID');
 
 
+    // Retrieve the count of scanned inventory for each team
+    $result = DB::table('INV.T_BIENS_SCANNES')
+    ->whereIn('GROUPE_ID', $groupeIds)
+    ->where('COP_ID', $user->structure_id)
+    ->whereIn('code_bar', function ($query) {
+        $query->select('AST_CB')
+              ->from('INV.T_E_ASSET_AST');
+    })
+    ->select('GROUPE_ID', DB::raw('COUNT(DISTINCT code_bar) as scanned_count'))
+    ->groupBy('GROUPE_ID')
+    ->get();
 
+     // Prepare the response
+     $data = [];
+     foreach ($result as $row) {
+         $data[] = [
+             'groupe_id' => $row->GROUPE_ID,
+             'scanned_count' => $row->scanned_count,
+         ];
+     }
 
+break;
+ case '3': // role id = 3 => chef equipe
+    $groupId = Equipe::where('EMP_ID', $user->matricule)
+                ->where('EMP_IS_MANAGER', 1)
+            ->value('GROUPE_ID');
+// Retrieve the scanned inventory count for each team member
+$result = DB::select("
+SELECT
+    b.EMP_ID,
+    b.EMP_FULLNAME,
+    COUNT(DISTINCT b.code_bar) AS scanned_count
+FROM dbo.equipe_localite el
+INNER JOIN INV.T_E_ASSET_AST a ON el.LOC_ID = a.LOC_ID_INIT AND el.COP_ID = a.COP_ID
+INNER JOIN INV.T_BIENS_SCANNES b ON b.code_bar = a.AST_CB AND b.LOC_ID = a.LOC_ID_INIT AND b.COP_ID = a.COP_ID
+WHERE el.COP_ID = '{$user->structure_id}' AND el.GROUPE_ID = $groupId
+GROUP BY b.EMP_ID, b.EMP_FULLNAME
+");
 
-
-    }
+// Prepare the data for the pie chart
+$data = [];
+foreach ($result as $row) {
+$data[] = [
+    'EMP_ID' => $row->EMP_ID,
+    'EMP_FULLNAME' => $row->EMP_FULLNAME,
+    'scanned_count' => $row->scanned_count,
+];
 }
+
+    } return response()->json($data);
+}
+public function ProgressChart(){
+    $user = Auth::user();
+
+    if (!$user) {
+        return response()->json(['message' => 'User not found'], 404);
+    }
+
+    switch ($user->role_id) {
+case '1': // role id = 1 => chef unité
+    $data = DB::select("
+    SELECT
+    COUNT(DISTINCT a.AST_CB) AS total_count,
+    COUNT(DISTINCT b.code_bar) AS scanned_count,
+    COUNT(DISTINCT a.AST_CB) - COUNT(DISTINCT b.code_bar) AS not_scanned_count
+    FROM INV.T_R_UNITE_COMPTABLE_UCM u
+    LEFT JOIN INV.T_R_CENTRE_OPERATIONNEL_COP c ON u.UCM_ID = c.UCM_ID
+    LEFT JOIN INV.T_E_ASSET_AST a ON c.COP_ID = a.COP_ID
+    LEFT JOIN INV.T_BIENS_SCANNES b ON b.code_bar = a.AST_CB AND b.COP_ID = c.COP_ID
+    LEFT JOIN (
+        SELECT u.UCM_ID, COUNT(DISTINCT AST_CB) AS not_scanned_count
+        FROM INV.T_R_UNITE_COMPTABLE_UCM u
+        LEFT JOIN INV.T_R_CENTRE_OPERATIONNEL_COP c ON u.UCM_ID = c.UCM_ID
+        LEFT JOIN INV.T_E_ASSET_AST a ON c.COP_ID = a.COP_ID
+        WHERE a.AST_CB NOT IN (
+            SELECT code_bar FROM INV.T_BIENS_SCANNES WHERE COP_ID = c.COP_ID
+        )
+        GROUP BY u.UCM_ID
+    ) AS c2 ON u.UCM_ID = c2.UCM_ID
+    WHERE u.UCM_ID = '{$user->structure_id}'
+");
+    break;
+    case'2':
+        $data = DB::select("
+        SELECT COUNT(DISTINCT a.AST_CB) AS total_count,
+        COUNT(DISTINCT b.code_bar) AS scanned_count,
+        COUNT(DISTINCT a.AST_CB) - COUNT(DISTINCT b.code_bar) AS not_scanned_count
+        FROM INV.T_R_CENTRE_OPERATIONNEL_COP c
+        LEFT JOIN INV.T_E_ASSET_AST a ON c.COP_ID = a.COP_ID
+        LEFT JOIN INV.T_BIENS_SCANNES b ON b.code_bar = a.AST_CB AND b.COP_ID = c.COP_ID
+        WHERE c.COP_ID = '{$user->structure_id}'
+    ");
+        break;
+        case '3': // role id = 3 => chef équipe
+            $data = DB::select("
+                SELECT
+                COUNT(DISTINCT a.AST_CB) AS total_count,
+                COUNT(DISTINCT b.code_bar) AS scanned_count,
+                COUNT(DISTINCT a.AST_CB) - COUNT(DISTINCT b.code_bar) AS not_scanned_count
+                FROM INV.T_E_LOCATION_LOC l
+                LEFT JOIN INV.T_E_ASSET_AST a ON l.LOC_ID = a.LOC_ID_INIT
+                LEFT JOIN INV.T_BIENS_SCANNES b ON b.code_bar = a.AST_CB AND b.LOC_ID = a.LOC_ID_INIT
+                LEFT JOIN (
+                    SELECT l.LOC_ID, COUNT(DISTINCT AST_CB) AS not_scanned_count
+                    FROM INV.T_E_LOCATION_LOC l
+                    LEFT JOIN INV.T_E_ASSET_AST a ON l.LOC_ID = a.LOC_ID_INIT
+                    WHERE a.AST_CB NOT IN (
+                        SELECT code_bar FROM INV.T_BIENS_SCANNES WHERE LOC_ID = l.LOC_ID
+                    )
+                    GROUP BY l.LOC_ID
+                ) AS l2 ON l.LOC_ID = l2.LOC_ID
+                WHERE a.LOC_ID_INIT IS NOT NULL AND l.COP_ID = '{$user->structure_id}'
+            ");
+}return response()->json($data);
+
+}
+
 }
 

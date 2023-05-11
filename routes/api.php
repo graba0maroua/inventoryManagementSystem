@@ -24,7 +24,7 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
-Route::get('/export/infrastructureunite', [ExportController::class, 'infrastructureUnitepdf']);
+
 
 Route::post('/register',[AuthController::class,'register']);
 Route::post('/login',[AuthController::class,'login']);
@@ -37,6 +37,7 @@ Route::controller(AdminController::class)->middleware('auth:sanctum')->group(fun
     Route::delete('/deleteUser/{id}','deleteUser');
 
 });
+
  Route::controller(LocaliteController::class)->middleware('auth:sanctum')->group(function(){
  Route::get('/NotVisited_Localites','NotVisited_Localites');
 });
@@ -51,21 +52,25 @@ Route::controller(BiensScannesController::class)->middleware('auth:sanctum')->gr
     Route::get('/inventoryList','inventoryList');
     Route::get('/localiteVisite','localiteVisite');
 });
+Route::controller(ChartsController::class)->middleware('auth:sanctum')->group(function(){
+    Route::get('/lineChart','lineChart');
+    Route::get('/PieChart','PieChart');
+    Route::get('/ProgressChart','ProgressChart');
+});
 
 // Route::post('/storeEquipe',[EquipeController::class,'store']);
 Route::get('/getDemandes',[DemandeCompteController::class,'getDemandes']);
-Route::get('/mail',[DemandeCompteController::class,'mail'])->middleware('auth:sanctum');
-
-
 Route::get('/getUnite',[UniteController::class,'index'])->middleware('auth:sanctum');
-Route::get('/lineChart',[ChartsController::class,'lineChart'])->middleware('auth:sanctum');
-
-
 Route::get('/role',[AdminController::class,'role'])->middleware('auth:sanctum');
 
 Route::get('/infrastructureUnite',[BiensScannesController::class,'infrastructureUnite']);
 Route::get('/infrastructureCentre',[BiensScannesController::class,'infrastructureCentre']);
 Route::get('/infrastructureLocalite',[BiensScannesController::class,'infrastructureLocalite']);
-Route::get('/fill_LOC_ID_INIT',[AssetsController::class,'fill_LOC_ID_INIT']);
 
+Route::controller(ExportController::class)->group(function(){
+    Route::get('/export/infrastructureunite','infrastructureUnitepdf');
+    Route::get('/export/infrastructurecentre','infrastructureCentrepdf');
+    Route::get('/export/infrastructurelocalite','infrastructureLocalitepdf');
+    Route::get('/export/listeInventaire','listeInventairepdf');
+});
 
