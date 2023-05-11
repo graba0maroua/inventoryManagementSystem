@@ -67,7 +67,7 @@ Route::get('/infrastructureUnite',[BiensScannesController::class,'infrastructure
 Route::get('/infrastructureCentre',[BiensScannesController::class,'infrastructureCentre']);
 Route::get('/infrastructureLocalite',[BiensScannesController::class,'infrastructureLocalite']);
 
-Route::controller(ExportController::class)->group(function(){
+Route::controller(ExportController::class)->middleware('auth:sanctum')->group(function(){
     Route::get('/export/infrastructureunite','infrastructureUnitepdf');
     Route::get('/export/infrastructurecentre','infrastructureCentrepdf');
     Route::get('/export/infrastructurelocalite','infrastructureLocalitepdf');

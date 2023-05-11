@@ -13,6 +13,7 @@ use Maatwebsite\Excel\Excel;
 
 class ExportController extends Controller
 {
+
     public function infrastructureUnitepdf()
 {
     $results = DB::select("
@@ -151,93 +152,6 @@ GROUP BY l.LOC_ID, l.LOC_LIB
      return response()->json(['message' => 'PDF exported successfully']);
 
 }
-public function listeInventairepdf(){
-    $user = Auth::user();
-    if (!$user) {
-        return response()->json(['message' => 'User not found'], 404);
-    }
-    switch ($user->role_id) {
-        case '1': // role id = 1 => chef unité
-    $result = DB::select("
-    SELECT
-    a.COP_ID AS COP_ID,
- a.AST_ID AS AST_ID,
- a.AST_CB AS code_bar,
- a.AST_LIB AS AST_LIB,
- a.AST_VALBASE AS AST_VALBASE,
- a.AST_DTE_ACQ AS AST_DTE_ACQ,
- a.LOC_ID_INIT AS LOC_ID_INIT,
- a.LOC_LIB_INIT AS LOC_LIB_INIT,
-             CASE
-                 WHEN b.code_bar IS NOT NULL THEN 'Scanned'
-                 ELSE 'Not Scanned'
-             END AS status
-         FROM INV.T_R_CENTRE_OPERATIONNEL_COP c
-         LEFT JOIN INV.T_E_ASSET_AST a ON c.COP_ID = a.COP_ID
-         LEFT JOIN INV.T_BIENS_SCANNES b ON b.code_bar = a.AST_CB AND b.COP_ID = c.COP_ID
-        WHERE c.UCM_ID = " . $user->structure_id
-    );
-break;
-case '2': //role id = 2 => chef centre
-    $result = DB::select("
-                SELECT
-                  c.COP_ID AS COP_ID,
-                    a.AST_ID AS AST_ID,
-                    a.AST_CB AS code_bar,
-                    a.AST_LIB AS AST_LIB,
-                    a.AST_VALBASE AS AST_VALBASE,
-                    a.AST_DTE_ACQ AS AST_DTE_ACQ,
-                    a.LOC_ID_INIT AS LOC_ID_INIT,
-                    a.LOC_LIB_INIT AS LOC_LIB_INIT,
-                    CASE
-                        WHEN b.code_bar IS NOT NULL THEN 'Scanned'
-                        ELSE 'Not Scanned'
-                    END AS status
-                FROM INV.T_R_CENTRE_OPERATIONNEL_COP c
-                LEFT JOIN INV.T_E_ASSET_AST a ON c.COP_ID = a.COP_ID
-                LEFT JOIN INV.T_BIENS_SCANNES b ON b.code_bar = a.AST_CB AND b.COP_ID = c.COP_ID
-                WHERE c.COP_ID = :structure_id
-                ", ['structure_id' => $user->structure_id]);
-            break;
-            case '3': // role id = 3 => chef equipe
-                $groupId = Equipe::where('EMP_ID', $user->matricule)
-                ->where('EMP_IS_MANAGER', 1)
-            ->value('GROUPE_ID');
-
-                $result = DB::select("
-                SELECT
-                a.AST_ID AS AST_ID,
-                a.AST_CB AS code_bar,
-                a.AST_LIB AS AST_LIB,
-                a.AST_VALBASE AS AST_VALBASE,
-                a.AST_DTE_ACQ AS AST_DTE_ACQ,
-                a.LOC_ID_INIT AS LOC_ID_INIT,
-                a.LOC_LIB_INIT AS LOC_LIB_INIT,
-                CASE
-                    WHEN b.code_bar IS NOT NULL THEN 'Scanned'
-                    ELSE 'Not Scanned'
-                END AS status
-            FROM dbo.equipe_localite el
-            INNER JOIN INV.T_E_ASSET_AST a ON el.LOC_ID = a.LOC_ID_INIT AND el.COP_ID = a.COP_ID
-            LEFT JOIN INV.T_BIENS_SCANNES b ON b.code_bar = a.AST_CB AND b.LOC_ID = a.LOC_ID_INIT AND b.COP_ID = a.COP_ID
-            WHERE el.COP_ID =$user->structure_id AND el.GROUPE_ID = $groupId
-                 ");
-                 break;
-}
-$pdf = new Dompdf();
-$pdf->loadHtml(View::make('iinventoryList-pdf', ['results' => $result]));
-$pdf->setPaper('A4', 'landscape');
-$pdf->render();
-
-// Generate a unique file name
-$fileName = 'infrastructure-localités-' . date('Y-m-d-H-i-s') . '.pdf';
-
-// Store the PDF file in the storage directory
-$pdf->stream($fileName, ['Attachment' => true]);
-
-return response()->json(['message' => 'PDF exported successfully']);
-}
-
       }
 
 
