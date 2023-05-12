@@ -152,7 +152,9 @@ GROUP BY l.LOC_ID, l.LOC_LIB
      return response()->json(['message' => 'PDF exported successfully']);
 
 }
-      }
+
+
+}
 
 
 
