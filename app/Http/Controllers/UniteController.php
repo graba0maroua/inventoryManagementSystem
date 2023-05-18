@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Centre;
+use App\Models\Localite;
 use App\Models\Unite;
 use Illuminate\Http\Request;
 
@@ -10,18 +12,24 @@ class UniteController extends Controller
 
     public function index()
     {
-        return Unite::all();   //get all unites
+        return Unite::all();
     }
 
-    public function GetLOC_by_UCM(string $id)
+    public function centreAll( )
     {
-        return Unite::find($id)->CentreLocalite; //get localite by unite id
+         return response()->json(["centres"=>Centre::all(),
+         "unites"=>Unite::all()],200);
+    }
+    public function centres( Request $request)
+    {
+         return response()->json(["centres"=>Centre::where('COP_LIB','like','%'.$request['keyword'].'%')->get()],200); //get localite by unite id
+    }
+    public function localiteAll()
+    {
+         return Localite::all();
     }
 
-    public function store(Request $request)
-    {
-        //
-    }
+ 
 
 
     public function show(string $id)

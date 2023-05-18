@@ -104,14 +104,14 @@ class AuthController extends Controller
             'message' => 'User not found.',
         ], 401);
     }
-    if ($user->role_id==4) { //if user is Admin
-        $token=$user->createToken('myapptoken')->plainTextToken;
-        $response = [
-            'message' => 'Admin Logged In Successfully',
-            'token'=> $token
-        ];
-        return response($response,201);
-    }
+    // if ($user->role_id==4) { //if user is Admin
+    //     $token=$user->createToken('myapptoken')->plainTextToken;
+    //     $response = [
+    //         'message' => 'Admin Logged In Successfully',
+    //         'token'=> $token
+    //     ];
+    //     return response($response,201);
+    // }
     if (!$user->Compte_isActivated) {
         return response()->json(['message' => 'Your account is not activated'], 401);
     }
@@ -128,8 +128,9 @@ class AuthController extends Controller
 
     $token=$user->createToken('myapptoken')->plainTextToken;
     $response = [
-        'message' => 'User Logged In Successfully',
-        'user' => $user,
+        'name' => $user->name,
+        'id'=>$user->id,
+        'role' => $user->role->name,
         'token'=> $token
     ];
     return response($response,201);

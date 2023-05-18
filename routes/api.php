@@ -60,7 +60,11 @@ Route::controller(ChartsController::class)->middleware('auth:sanctum')->group(fu
 
 // Route::post('/storeEquipe',[EquipeController::class,'store']);
 Route::get('/getDemandes',[DemandeCompteController::class,'getDemandes']);
-Route::get('/getUnite',[UniteController::class,'index'])->middleware('auth:sanctum');
+Route::get('/getUnite',[UniteController::class,'index']);
+Route::get('/getLocalite',[UniteController::class,'localiteAll']);
+Route::get('/getcentre',[UniteController::class,'centreAll']);
+Route::get('/centres',[UniteController::class,'centres']);
+
 Route::get('/role',[AdminController::class,'role'])->middleware('auth:sanctum');
 
 Route::get('/infrastructureUnite',[BiensScannesController::class,'infrastructureUnite']);

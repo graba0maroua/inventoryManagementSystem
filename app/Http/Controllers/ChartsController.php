@@ -374,7 +374,7 @@ case '1': // role id = 1 => chef unité
                 ) AS l2 ON l.LOC_ID = l2.LOC_ID
                 WHERE a.LOC_ID_INIT IS NOT NULL AND l.COP_ID = '{$user->structure_id}'
             ");
-}return response()->json($data);
+}return response()->json(['data'=>$data]);
 
 }
 
