@@ -19,6 +19,90 @@ class BiensScannesController extends Controller
     {
         return BiensScannes::all();
     }
+
+    public function listCentre(){
+        $user = Auth::user();
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+        $result = DB::select("
+                SELECT
+                  c.COP_ID AS COP_ID,
+                    a.AST_ID AS AST_ID,
+                    a.AST_CB AS code_bar,
+                    a.AST_LIB AS AST_LIB,
+                    a.AST_VALBASE AS AST_VALBASE,
+                    a.AST_DTE_ACQ AS AST_DTE_ACQ,
+                    a.LOC_ID_INIT AS LOC_ID_INIT,
+                    a.LOC_LIB_INIT AS LOC_LIB_INIT,
+                    CASE
+                        WHEN b.code_bar IS NOT NULL THEN 'Scanné'
+                        ELSE 'Non Scanné'
+                    END AS status
+                FROM INV.T_R_CENTRE_OPERATIONNEL_COP c
+                LEFT JOIN INV.T_E_ASSET_AST a ON c.COP_ID = a.COP_ID
+                LEFT JOIN INV.T_BIENS_SCANNES b ON b.code_bar = a.AST_CB AND b.COP_ID = c.COP_ID
+                WHERE c.COP_ID = :structure_id
+                ", ['structure_id' => $user->structure_id]);
+           return response()->json($result);
+    }
+    public function listUnite(){
+        $user = Auth::user();
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+        $result = DB::select("
+    SELECT
+    a.COP_ID AS COP_ID,
+ a.AST_ID AS AST_ID,
+ a.AST_CB AS code_bar,
+ a.AST_LIB AS AST_LIB,
+ a.AST_VALBASE AS AST_VALBASE,
+ a.AST_DTE_ACQ AS AST_DTE_ACQ,
+ a.LOC_ID_INIT AS LOC_ID_INIT,
+ a.LOC_LIB_INIT AS LOC_LIB_INIT,
+             CASE
+                 WHEN b.code_bar IS NOT NULL THEN 'Scanné'
+                 ELSE 'Non Scanné'
+             END AS status
+         FROM INV.T_R_CENTRE_OPERATIONNEL_COP c
+         LEFT JOIN INV.T_E_ASSET_AST a ON c.COP_ID = a.COP_ID
+         LEFT JOIN INV.T_BIENS_SCANNES b ON b.code_bar = a.AST_CB AND b.COP_ID = c.COP_ID
+        WHERE c.UCM_ID = " . $user->structure_id
+    );
+    return response()->json($result);
+    }
+    public function listLocalite(){
+        $user = Auth::user();
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+        $groupId = Equipe::where('EMP_ID', $user->matricule)
+                ->where('EMP_IS_MANAGER', 1)
+            ->value('GROUPE_ID');
+
+                $result = DB::select("
+                SELECT
+                a.COP_ID AS COP_ID,
+                a.AST_ID AS AST_ID,
+                a.AST_CB AS code_bar,
+                a.AST_LIB AS AST_LIB,
+                a.AST_VALBASE AS AST_VALBASE,
+                a.AST_DTE_ACQ AS AST_DTE_ACQ,
+                a.LOC_ID_INIT AS LOC_ID_INIT,
+                a.LOC_LIB_INIT AS LOC_LIB_INIT,
+                CASE
+                    WHEN b.code_bar IS NOT NULL THEN 'Scanné'
+                    ELSE 'Non Scanné'
+                END AS status
+            FROM dbo.equipe_localite el
+            INNER JOIN INV.T_E_ASSET_AST a ON el.LOC_ID = a.LOC_ID_INIT AND el.COP_ID = a.COP_ID
+            LEFT JOIN INV.T_BIENS_SCANNES b ON b.code_bar = a.AST_CB AND b.LOC_ID = a.LOC_ID_INIT AND b.COP_ID = a.COP_ID
+            WHERE el.COP_ID =$user->structure_id AND el.GROUPE_ID = $groupId
+                 ");
+    return response()->json($result);
+    }
+
 //* Filtrer liste d'inventaires par structure
 public function inventoryList()
 {
@@ -39,8 +123,8 @@ public function inventoryList()
  a.LOC_ID_INIT AS LOC_ID_INIT,
  a.LOC_LIB_INIT AS LOC_LIB_INIT,
              CASE
-                 WHEN b.code_bar IS NOT NULL THEN 'Scanned'
-                 ELSE 'Not Scanned'
+                 WHEN b.code_bar IS NOT NULL THEN 'Scanné'
+                 ELSE 'Non Scanné'
              END AS status
          FROM INV.T_R_CENTRE_OPERATIONNEL_COP c
          LEFT JOIN INV.T_E_ASSET_AST a ON c.COP_ID = a.COP_ID
@@ -60,8 +144,8 @@ case '2': //role id = 2 => chef centre
                     a.LOC_ID_INIT AS LOC_ID_INIT,
                     a.LOC_LIB_INIT AS LOC_LIB_INIT,
                     CASE
-                        WHEN b.code_bar IS NOT NULL THEN 'Scanned'
-                        ELSE 'Not Scanned'
+                        WHEN b.code_bar IS NOT NULL THEN 'Scanné'
+                        ELSE 'Non Scanné'
                     END AS status
                 FROM INV.T_R_CENTRE_OPERATIONNEL_COP c
                 LEFT JOIN INV.T_E_ASSET_AST a ON c.COP_ID = a.COP_ID
@@ -84,8 +168,8 @@ case '2': //role id = 2 => chef centre
                 a.LOC_ID_INIT AS LOC_ID_INIT,
                 a.LOC_LIB_INIT AS LOC_LIB_INIT,
                 CASE
-                    WHEN b.code_bar IS NOT NULL THEN 'Scanned'
-                    ELSE 'Not Scanned'
+                    WHEN b.code_bar IS NOT NULL THEN 'Scanné'
+                    ELSE 'Non Scanné'
                 END AS status
             FROM dbo.equipe_localite el
             INNER JOIN INV.T_E_ASSET_AST a ON el.LOC_ID = a.LOC_ID_INIT AND el.COP_ID = a.COP_ID
@@ -97,6 +181,7 @@ case '2': //role id = 2 => chef centre
 
     return response()->json($result);
 }
+
 // * INFRASTRUCTURE : CENTRE
 public function infrastructureCentre()
 {
@@ -173,6 +258,20 @@ GROUP BY l.LOC_ID, l.LOC_LIB
         }
     }
 
+    // $response = [];
+
+    // foreach ($result as $row) {
+    //     $response[] = [
+    //         "locality_id" => $row->locality_id,
+    //         "locality_name" => $row->locality_name,
+    //         "total_count" => $row->total_count,
+    //         "scanned_count" => $row->scanned_count,
+    //         "not_scanned_count" => $row->not_scanned_count,
+    //         "percentage" => $row->percentage,
+    //     ];
+    // }
+
+    // return response()->json($response);
     return response()->json($result);
 }
 // * INFRASTRUCTURE : UNITE
@@ -232,37 +331,5 @@ GROUP BY u.UCM_ID, u.UCM_LIB
 // u.UCM_ID = c.UCM_ID: This links the accounting units in T_R_UNITE_COMPTABLE_UCM with the corresponding operational centers in T_R_CENTRE_OPERATIONNEL_COP.
 // c.COP_ID = a.COP_ID: This links the operational centers in T_R_CENTRE_OPERATIONNEL_COP with the corresponding assets in T_E_ASSET_AST.
 // b.code_bar = a.AST_CB AND b.COP_ID = c.COP_ID: This links the assets in T_E_ASSET_AST with the scanned assets in T_BIENS
-function localiteVisite()
-{
-    $user = Auth::user();
-        if (!$user) {
-            return response()->json(['message' => 'User not found'], 404);
-        }
-    // Get the equipe with the specified ID
-    $groupId = Equipe::where('EMP_ID', $user->matricule)
-    ->where('EMP_IS_MANAGER', 1)
-    ->value('GROUPE_ID');
- // Get the equipe's assigned localities
-    $localities = DB::table('equipe_localite')
-                    ->where('GROUPE_ID', $groupId)
-                    ->where('COP_ID', $user->structure_id)
-                    ->pluck('LOC_ID')
-                    ->toArray();
-
-    // Get the visited localities for the equipe
-    $visitedLocalities = DB::table('INV.T_BIENS_SCANNES')
-                            ->whereIn('LOC_ID', $localities)
-                            ->where('GROUPE_ID',$groupId)
-                            ->select('LOC_ID','LOC_LIB')
-                            ->distinct()
-                            ->pluck('LOC_ID','LOC_LIB')
-                            ->toArray();
-
-    // // Get the unvisited localities for the equipe
-    // $unvisitedLocalities = array_diff($localities, $visitedLocalities);
-
-    // Return the visited  localities
-    return  $visitedLocalities;
-}
 
 }

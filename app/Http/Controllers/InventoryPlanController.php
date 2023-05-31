@@ -10,9 +10,9 @@ class InventoryPlanController extends Controller
 
     public function index()
     {
-        $equipeLocalites = EquipeLocalite::all();
+        // $equipeLocalites = EquipeLocalite::all();
 
-        return response()->json($equipeLocalites);
+        return response()->json(EquipeLocalite::all());
     }
 
 
@@ -56,7 +56,6 @@ class InventoryPlanController extends Controller
         return response()->json($mapping, 200);
     }
 
-//! Show this to mohamed : ani dayra delete based on the 3 ids 
     public function destroy($groupeId, $locId, $copId)
     {
         $deletedRow = equipeLocalite::where('GROUPE_ID', $groupeId)

@@ -6,6 +6,7 @@ use App\Models\Unite;
 use DB;
 use Auth;
 use Dompdf\Dompdf;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\View;
 
 use Illuminate\Http\Request;
@@ -58,10 +59,15 @@ class ExportController extends Controller
     // Generate a unique file name
     $fileName = 'infrastructure-unites-' . date('Y-m-d-H-i-s') . '.pdf';
 
-    // Store the PDF file in the storage directory
-    $pdf->stream($fileName, ['Attachment' => true]);
 
-    return response()->json(['message' => 'PDF exported successfully']);
+
+      // Store the PDF file in the storage directory
+      Storage::put('public/'.$fileName, $pdf->output());
+
+      // Generate a public URL for the stored PDF file
+      $publicUrl = Storage::url('public/'.$fileName);
+
+      return response()->json(['pdf_url' => $publicUrl]);
 }
 
 public function infrastructureCentrepdf(){
@@ -101,10 +107,17 @@ GROUP BY c.COP_ID, c.COP_LIB
     // Generate a unique file name
     $fileName = 'infrastructure-centres-' . date('Y-m-d-H-i-s') . '.pdf';
 
-    // Store the PDF file in the storage directory
-    $pdf->stream($fileName, ['Attachment' => true]);
+    // // Store the PDF file in the storage directory
+    // $pdf->stream($fileName, ['Attachment' => true]);
 
-    return response()->json(['message' => 'PDF exported successfully']);
+    // return response()->json(['message' => 'PDF exported successfully']);
+      // Store the PDF file in the storage directory
+      Storage::put('public/'.$fileName, $pdf->output());
+
+      // Generate a public URL for the stored PDF file
+      $publicUrl = Storage::url('public/'.$fileName);
+
+      return response()->json(['pdf_url' => $publicUrl]);
 }
 public function infrastructureLocalitepdf(){
     $results = DB::select("
@@ -146,15 +159,26 @@ GROUP BY l.LOC_ID, l.LOC_LIB
      // Generate a unique file name
      $fileName = 'infrastructure-localités-' . date('Y-m-d-H-i-s') . '.pdf';
 
+    //  // Store the PDF file in the storage directory
+    //  $pdf->stream($fileName, ['Attachment' => true]);
+
+    //  return response()->json(['message' => 'PDF exported successfully']);
+
+
+    //! make link
      // Store the PDF file in the storage directory
-     $pdf->stream($fileName, ['Attachment' => true]);
+     Storage::put('public/'.$fileName, $pdf->output());
 
-     return response()->json(['message' => 'PDF exported successfully']);
+     // Generate a public URL for the stored PDF file
+     $publicUrl = Storage::url('public/'.$fileName);
+
+     return response()->json(['pdf_url' => $publicUrl]);
+ }
 
 }
 
 
-}
+
 
 
 

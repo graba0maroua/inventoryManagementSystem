@@ -40,6 +40,7 @@ Route::controller(AdminController::class)->middleware('auth:sanctum')->group(fun
 
  Route::controller(LocaliteController::class)->middleware('auth:sanctum')->group(function(){
  Route::get('/NotVisited_Localites','NotVisited_Localites');
+ Route::get('/localiteVisite','localiteVisite');
 });
 Route::controller(InventoryPlanController::class)->group(function(){
     Route::get('/inventory-plan','index');
@@ -50,14 +51,16 @@ Route::controller(InventoryPlanController::class)->group(function(){
 Route::controller(BiensScannesController::class)->middleware('auth:sanctum')->group(function(){
     Route::get('/biensScannes','index');
     Route::get('/inventoryList','inventoryList');
-    Route::get('/localiteVisite','localiteVisite');
+    Route::get('/listCentre','listCentre');
+    Route::get('/listLocalite','listLocalite');
+    Route::get('/listUnite','listUnite');
 });
 Route::controller(ChartsController::class)->middleware('auth:sanctum')->group(function(){
     Route::get('/lineChart','lineChart');
     Route::get('/PieChart','PieChart');
+    Route::get('/PieChart1','PieChart1');
     Route::get('/ProgressChart','ProgressChart');
 });
-
 // Route::post('/storeEquipe',[EquipeController::class,'store']);
 Route::get('/getDemandes',[DemandeCompteController::class,'getDemandes']);
 Route::get('/getUnite',[UniteController::class,'index']);
