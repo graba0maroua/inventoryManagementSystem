@@ -29,6 +29,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::post('/register',[AuthController::class,'register']);
 Route::post('/login',[AuthController::class,'login']);
 Route::post('/logout',[AuthController::class,'logout'])->middleware('auth:sanctum');
+Route::put('/updatePassword',[AuthController::class,'updatePassword'])->middleware('auth:sanctum');
+Route::get('/user',[AuthController::class,'user'])->middleware('auth:sanctum');
 
 Route::controller(AdminController::class)->middleware('auth:sanctum')->group(function(){
     Route::put('/acceptDemandeCompte/{id}','acceptDemandeCompte');
@@ -59,7 +61,9 @@ Route::controller(ChartsController::class)->middleware('auth:sanctum')->group(fu
     Route::get('/lineChart','lineChart');
     Route::get('/PieChart','PieChart');
     Route::get('/PieChart1','PieChart1');
-    Route::get('/ProgressChart','ProgressChart');
+    Route::get('/PieChart2','PieChart2');
+    Route::get('/PieChart3','PieChart3');
+    Route::get('/Progress','Progress');
 });
 // Route::post('/storeEquipe',[EquipeController::class,'store']);
 Route::get('/getDemandes',[DemandeCompteController::class,'getDemandes']);

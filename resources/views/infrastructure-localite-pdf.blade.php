@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Infrastructure Localités PDF Export</title>
+    <title>Infrastructure Localités PDF</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -32,17 +32,17 @@
     </style>
 </head>
 <body>
-    <h1>Infrastructure Localités PDF Export</h1>
+    <h1>Infrastructure Localités PDF </h1>
 
     <table>
         <thead>
             <tr>
-                <th>ID localité</th>
+                <th>N° localité</th>
                 <th>Nom Localité</th>
-                <th>Total Count</th>
-                <th>Scanned Count</th>
-                <th>Not Scanned Count</th>
-                <th>Percentage</th>
+                <th>Nombre total d'inventaire</th>
+                <th>Nombre d'inventaires scannés</th>
+                <th>Nombre d'inventaires non scannés</th>
+                <th>Pourcentage</th>
             </tr>
         </thead>
         <tbody>

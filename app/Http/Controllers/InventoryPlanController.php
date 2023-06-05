@@ -8,13 +8,16 @@ use Illuminate\Http\Request;
 class InventoryPlanController extends Controller
 {
 
-    public function index()
+    public function index(Request $request)
     {
-        // $equipeLocalites = EquipeLocalite::all();
+        $equipeLocalites = EquipeLocalite::where(
+            'GROUPE_ID','like','%'.$request['keyword'].'%')
+            ->orWhere('LOC_ID','like','%'.$request['keyword'].'%')
+            ->orWhere('COP_ID','like','%'.$request['keyword'].'%')
+            ->get();
 
-        return response()->json(EquipeLocalite::all());
+        return response()->json($equipeLocalites);
     }
-
 
     public function store(Request $request)
     {

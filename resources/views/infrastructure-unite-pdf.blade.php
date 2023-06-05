@@ -37,12 +37,12 @@
     <table>
         <thead>
             <tr>
-                <th>Unit ID</th>
-                <th>Unit Name</th>
-                <th>Total Count</th>
-                <th>Scanned Count</th>
-                <th>Not Scanned Count</th>
-                <th>Percentage</th>
+                <th>N° Unité</th>
+                <th>Nom unité</th>
+                <th>Nombre total d'inventaire</th>
+                <th>Nombre d'inventaires scannés</th>
+                <th>Nombre d'inventaires non scannés</th>
+                <th>Pourcentage</th>
             </tr>
         </thead>
         <tbody>
