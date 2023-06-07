@@ -64,14 +64,8 @@ class InventoryPlanController extends Controller
         $deletedRow = equipeLocalite::where('GROUPE_ID', $groupeId)
             ->where('LOC_ID', $locId)
             ->where('COP_ID', $copId)
-            ->first();
-
-        if ($deletedRow) {
-            $deletedRow->delete();
-            return response()->json(['message' => 'Row deleted successfully.']);
-        } else {
-            return response()->json(['message' => 'Row not found.'], 404);
-        }
+            ->delete();
+            return response()->json(200);
     }
 
 }
