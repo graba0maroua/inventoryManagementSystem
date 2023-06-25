@@ -48,6 +48,10 @@ class AuthController extends Controller
             $structureType = 'App\Models\Centre';
             $structure = $structureType::where('COP_LIB',$request->structure_id)
             ->value('COP_ID');
+        }elseif($request->role === 'Admin') {
+            $structureType = 'App\Models\Centre';
+            $structure = $structureType::where('COP_LIB',$request->structure_id)
+            ->value('COP_ID');
         }
             else {
             return response()->json(['message' => 'Invalid structure type'], 422);
@@ -96,15 +100,6 @@ class AuthController extends Controller
             'status' => false,
             'message' => 'User not found.',
         ], 401);
-    }
-    if ($user->role_id==4) { //if user is Admin
-        $token=$user->createToken('myapptoken')->plainTextToken;
-        $response = [
-            'message' => 'Admin Logged In Successfully',
-            'token'=> $token
-
-        ];
-        return response($response,201);
     }
     if (!$user->Compte_isActivated) {
         return response()->json(['message' => 'Your account is not activated'], 401);

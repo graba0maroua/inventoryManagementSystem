@@ -38,10 +38,10 @@
         <thead>
             <tr>
                 <th>N° localité</th>
-                <th>Nom Localité</th>
+                <th>Localité</th>
                 <th>Nombre total d'inventaire</th>
-                <th>Nombre d'inventaires scannés</th>
-                <th>Nombre d'inventaires non scannés</th>
+                <th>Nombre d'inventaire scanné</th>
+                <th>Nombre d'inventaire non scanné</th>
                 <th>Pourcentage</th>
             </tr>
         </thead>

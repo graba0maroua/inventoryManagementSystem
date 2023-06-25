@@ -258,20 +258,6 @@ GROUP BY l.LOC_ID, l.LOC_LIB
         }
     }
 
-    // $response = [];
-
-    // foreach ($result as $row) {
-    //     $response[] = [
-    //         "locality_id" => $row->locality_id,
-    //         "locality_name" => $row->locality_name,
-    //         "total_count" => $row->total_count,
-    //         "scanned_count" => $row->scanned_count,
-    //         "not_scanned_count" => $row->not_scanned_count,
-    //         "percentage" => $row->percentage,
-    //     ];
-    // }
-
-    // return response()->json($response);
     return response()->json($result);
 }
 // * INFRASTRUCTURE : UNITE

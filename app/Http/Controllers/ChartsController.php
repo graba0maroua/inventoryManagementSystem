@@ -555,12 +555,15 @@ $progress = [
     ];
         break;
         case '3': // role id = 3 => chef équipe
+            $groupId = Equipe::where('EMP_ID', $user->matricule)
+            ->where('EMP_IS_MANAGER', 1)
+            ->value('GROUPE_ID');
             $data = DB::select("
                 SELECT
                 COUNT(DISTINCT a.AST_CB) AS total_count,
                 COUNT(DISTINCT b.code_bar) AS scanned_count,
                 COUNT(DISTINCT a.AST_CB) - COUNT(DISTINCT b.code_bar) AS not_scanned_count
-                FROM INV.T_E_LOCATION_LOC l
+                FROM equipe_localite l
                 LEFT JOIN INV.T_E_ASSET_AST a ON l.LOC_ID = a.LOC_ID_INIT
                 LEFT JOIN INV.T_BIENS_SCANNES b ON b.code_bar = a.AST_CB AND b.LOC_ID = a.LOC_ID_INIT
                 LEFT JOIN (
@@ -572,7 +575,7 @@ $progress = [
                     )
                     GROUP BY l.LOC_ID
                 ) AS l2 ON l.LOC_ID = l2.LOC_ID
-                WHERE a.LOC_ID_INIT IS NOT NULL AND l.COP_ID = '{$user->structure_id}'
+                WHERE a.LOC_ID_INIT IS NOT NULL AND l.COP_ID = '{$user->structure_id}' AND l.GROUPE_ID= '{$groupId}'
             ");
             $progress = [
                 'total_count' => $data[0]->total_count,

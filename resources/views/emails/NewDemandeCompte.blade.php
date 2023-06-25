@@ -61,7 +61,7 @@
         <p>Une nouvelle demande de compte a été créée.</p>
         <p>
             Veuillez vous se rendre sur la page de connexion en cliquant sur le lien ci-dessous :
-            <a href="{{ url('/api/login') }}" class="button">Connectez-vous</a>
+            <a href="http://localhost:5173" class="button">Connectez-vous</a>
         </p>
     </div>
 </body>

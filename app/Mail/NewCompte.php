@@ -33,7 +33,7 @@ class NewCompte extends Mailable
     {
         return new Envelope(
             from: new Address('naftalInventoryManager@naftal.spa', 'Naftal inventoryManager'),
-            subject: 'New Demande Compte crée',
+            subject: 'Nouvelle demande de Compte créée',
         );
     }
 
