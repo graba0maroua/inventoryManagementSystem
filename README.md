@@ -1,9 +1,10 @@
 # Inventory management system
-## Useful commands:
+This project is built with Laravel and SQL Server, providing a robust and scalable backend to support the frontend dashboard.
+## Getting Started with some useful commands:
 ### Migration:
 - migrate a specific table with path :
 ```laravel
- php artisan migrate --path=database/migrations/2023_04_11_164724_create_demande_comptes_table.php
+ php artisan migrate --path=database/migrations/create_demande_comptes_table.php
 ```
 - rolling back migrations by steps :
 ```laravel
